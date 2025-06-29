@@ -7,7 +7,7 @@
 #define ADC_PIN 26
 #define LED_GPIO 25
 
-int main() {
+void pwm_led_loop() {
     // Initialize inputs and outputs
     stdio_init_all();
     adc_init();
@@ -26,22 +26,8 @@ int main() {
 
         uint8_t brightness = mic_val >> 4;
 
-
         pwm_set_chan_level(slice_num, pwm_gpio_to_channel(LED_GPIO), brightness);
 
         sleep_ms(10);
-        // uint16_t min = 4095;
-        // uint16_t max = 0;
-
-        // for (int i = 0; i < 100; i++) {
-        //     uint16_t val = adc_read();
-        //     if (val < min) min = val;
-        //     if (val > max) max = val;
-        //     sleep_us(100);
-        // }
-
-        // uint16_t amplitude = max - min;  // 12-bit value (0–4095)
-        // printf("Peak-to-peak amplitude: %d\n", amplitude);
-        // sleep_ms(50);
     }
 }
