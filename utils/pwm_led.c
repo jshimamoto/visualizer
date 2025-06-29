@@ -11,9 +11,19 @@
 #define BASELINE_SAMPLES 5000
 #define AMBIENT_THRESHOLD 400
 #define AUDIO_BASELINE 600
+#define MAX_DIFF 1000
 
 uint16_t read_mic() {
     return adc_read();
+}
+
+void setup_pwm(uint gpio_pin) {
+    gpio_set_function(gpio_pin, GPIO_FUNC_PWM);
+    uint slice = pwm_gpio_to_slice_num(gpio_pin);
+    pwm_config config = pwm_get_default_config();
+    pwm_config_set_clkdiv(&config, 4.0f);
+    pwm_init(slice, &config, true);
+    pwm_set_gpio_level(gpio_pin, 0);
 }
 
 void pwm_led_loop() {
@@ -25,9 +35,8 @@ void pwm_led_loop() {
     adc_gpio_init(ADC_PIN);       // Enable ADC on GP26 (ADC0)
     adc_select_input(ADC_INPUT);     // Select ADC0 (connected to GP26)
 
-    // LED init
-    gpio_init(LED_GPIO);
-    gpio_set_dir(LED_GPIO, GPIO_OUT);
+    // PWM LED init
+    setup_pwm(LED_GPIO);
 
     // Measure baseline noise and calculate average
     printf("Calculating baseline");
@@ -46,11 +55,11 @@ void pwm_led_loop() {
         
         if (diff < 0) diff = -diff;
         if (diff < AMBIENT_THRESHOLD) diff = 0;
-        // uint8_t brightness = diff > AUDIO_BASELINE ? 255 : diff;
 
-        if (diff > AUDIO_BASELINE) printf("Registered above baseline\n");
-        gpio_put(LED_GPIO, diff > AUDIO_BASELINE ? 1 : 0);
+        uint16_t brightness = (diff > MAX_DIFF) ? 65535 : (diff * 65535 / MAX_DIFF);
 
-        sleep_ms(10);
+        pwm_set_gpio_level(LED_GPIO, brightness);
+
+        sleep_ms(5);
     }
 }
