@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
-#include "pwm_led.h"
+#include "utils/pwm_led.h"
 
 #define ADC_INPUT 0
 #define ADC_PIN 26

@@ -6,7 +6,7 @@ project(visualize C CXX ASM)
 
 pico_sdk_init()
 
-add_subdirectory(utils)
+add_subdirectory(src/utils)
 
 add_executable(visualize
   src/main.c
