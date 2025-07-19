@@ -1,8 +1,9 @@
 add_library(utils
     print_amplitude.c 
-    pwm_led.c
+    pwm_led_mic.c
     blink_led_transistor.c
     pwm_led_transistor.c
+    pwm_led_mic_transistor.c
 )
 
 target_include_directories(utils PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
