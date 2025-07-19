@@ -40,18 +40,17 @@ void pwm_led_loop() {
     setup_pwm(LED_GPIO);
 
     // Measure baseline noise and calculate average
-    printf("Calculating baseline");
     uint32_t baseline_sum = 0;
     for (int i = 0; i < BASELINE_SAMPLES; ++i) {
         baseline_sum += read_mic();
         sleep_ms(1);
     }
     uint16_t baseline_avg = baseline_sum / BASELINE_SAMPLES;
-    printf("Baseline: %d\n", baseline_avg);
 
     // Main loop
     while (true) {
         uint16_t sample = read_mic();
+        printf("%d\n", sample);
         int16_t diff = sample - baseline_avg;
         
         if (diff < 0) diff = -diff;
@@ -61,6 +60,6 @@ void pwm_led_loop() {
 
         pwm_set_gpio_level(LED_GPIO, brightness);
 
-        sleep_ms(5);
+        sleep_us(125);
     }
 }
