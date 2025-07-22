@@ -9,6 +9,20 @@ void light_onboard_led(uint8_t GPIO_PIN_NUMBER) {
     gpio_put(GPIO_PIN_NUMBER, 1);
 }
 
+void init_transistor_pin_out(uint GPIO_PIN_NUMBER) {
+    gpio_init(GPIO_PIN_NUMBER);
+    gpio_set_dir(GPIO_PIN_NUMBER, GPIO_OUT);
+}
+
+void setup_pwm(uint GPIO_PIN) {
+    gpio_set_function(GPIO_PIN, GPIO_FUNC_PWM);
+    uint slice = pwm_gpio_to_slice_num(GPIO_PIN);
+    pwm_config config = pwm_get_default_config();
+    pwm_config_set_clkdiv(&config, 1.0f);
+    pwm_init(slice, &config, true);
+    pwm_set_gpio_level(GPIO_PIN, 0);
+}
+
 uint16_t read_mic() {
     return adc_read();
 }

@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "utils/fft_5_band.h"
-#include "utils/pwm_led_mic_transistor.h"
+#include "utils/fft_5_band.h"
 
 int main() {
     stdio_init_all();
     
-    pwm_led_mic_transistor();
+    five_band_fft_loop();
 
     return 0;
 }
