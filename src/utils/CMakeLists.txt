@@ -7,6 +7,7 @@ add_library(utils
     fft_5_band.c
     led_tools.c
     fft_tools.c
+    mic_tools.c
 )
 
 target_include_directories(utils PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
