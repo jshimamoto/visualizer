@@ -1,10 +1,7 @@
 #include <stdint.h>
 #include "kiss_fftr.h"
-
-// FFT settings
-#define SAMPLE_RATE         10000
-#define FFT_SIZE            128
-#define NUM_BANDS           5
+#include "utils/fft_tools.h"
+#include "pico/time.h"
 
 kiss_fftr_cfg fft_cfg;
 int16_t adc_buffer[FFT_SIZE];
@@ -15,11 +12,18 @@ static const int fft_5_band_ranges[5][2] = {
     {0, 5}, {6, 12}, {13, 25}, {26, 51}, {52, 64}
 };
 
-void get_fft_band_energies(uint16_t band_energies[NUM_BANDS], int16_t adc_buffer[FFT_SIZE]) {
+void set_fft_band_energies(uint16_t band_energies[NUM_BANDS]) {
+    if (!fft_cfg) {
+        fft_cfg = kiss_fftr_alloc(FFT_SIZE, 0, 0, 0);
+    }
+
     // Fill adc_buffer with time-domain samples
+    // NOTE: Assumes adc_init() and adc_select_input() were already called from parent
+    absolute_time_t next_time = get_absolute_time();
     for (int i = 0; i < FFT_SIZE; ++i) {
         adc_buffer[i] = adc_read();
-        sleep_us(1000000 / SAMPLE_RATE);
+        next_time = delayed_by_us(next_time, 100);
+        sleep_until(next_time);
     }
 
     // Run FFT
@@ -45,4 +49,13 @@ void get_fft_band_energies(uint16_t band_energies[NUM_BANDS], int16_t adc_buffer
         // Optionally apply log or sqrt compression here
         band_energies[band] = (uint16_t)sqrtf((float)sum);
     }
+}
+
+uint16_t get_pwm_brightness_from_energy(uint32_t band_energy) {
+    if (band_energy > MAX_BAND_ENERGY) {
+        band_energy = MAX_BAND_ENERGY;
+    }
+
+    float scaled = logf((float)band_energy + 1.0f) / logf((float)MAX_BAND_ENERGY + 1.0f);
+    return (uint16_t)(scaled * UINT16_MAX);
 }
