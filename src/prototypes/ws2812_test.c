@@ -12,19 +12,6 @@
 #include "hardware/clocks.h"
 #include "ws2812.pio.h"
 
-/**
- * NOTE:
- *  Take into consideration if your WS2812 is a RGB or RGBW variant.
- *
- *  If it is RGBW, you need to set IS_RGBW to true and provide 4 bytes per 
- *  pixel (Red, Green, Blue, White) and use urgbw_u32().
- *
- *  If it is RGB, set IS_RGBW to false and provide 3 bytes per pixel (Red,
- *  Green, Blue) and use urgb_u32().
- *
- *  When RGBW is used with urgb_u32(), the White channel will be ignored (off).
- *
- */
 #define IS_RGBW false
 #define NUM_PIXELS 3
 
@@ -52,7 +39,7 @@ static inline uint32_t urgb_u32(uint8_t r, uint8_t g, uint8_t b) {
 }
 
 
-int main() {
+void ws2812_test() {
     //set_sys_clock_48();
     stdio_init_all();
     printf("WS2812 Smoke Test, using pin %d\n", WS2812_PIN);

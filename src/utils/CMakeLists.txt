@@ -1,10 +1,4 @@
 add_library(utils
-    print_amplitude.c 
-    pwm_led_mic.c
-    blink_led_transistor.c
-    pwm_led_transistor.c
-    pwm_led_mic_transistor.c
-    fft_5_band.c
     led_tools.c
     fft_tools.c
     mic_tools.c

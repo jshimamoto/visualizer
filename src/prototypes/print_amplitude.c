@@ -3,6 +3,7 @@
 #include "hardware/adc.h"
 #include "hardware/pwm.h"
 #include "utils/led_tools.h"
+#include "prototypes/print_amplitude.h"
 
 #define ADC_INPUT 0
 #define ADC_PIN 26

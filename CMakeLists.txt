@@ -7,6 +7,7 @@ pico_sdk_init()
 
 # Add dependencies
 add_subdirectory(src/utils)
+add_subdirectory(src/prototypes)
 add_subdirectory(lib/kissfft)
 
 # Build
@@ -19,6 +20,7 @@ target_link_libraries(visualize
   hardware_adc 
   hardware_pwm
   utils
+  prototypes
   kissfft
 )
 

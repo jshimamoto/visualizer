@@ -3,7 +3,7 @@
 #include "pico/stdlib.h"
 #include "hardware/adc.h"
 #include "hardware/pwm.h"
-#include "utils/pwm_led_transistor.h"
+#include "prototypes/pwm_led_transistor.h"
 
 #define TRANS_BASE_PIN 20
 #define ONBOARD_LED 25

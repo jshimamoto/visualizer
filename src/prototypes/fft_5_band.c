@@ -8,7 +8,7 @@
 
 #include "kiss_fftr.h"
 
-#include "utils/fft_5_band.h"
+#include "prototypes/fft_5_band.h"
 #include "utils/led_tools.h"
 #include "utils/fft_tools.h"
 #include "utils/mic_tools.h"
