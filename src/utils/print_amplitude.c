@@ -2,17 +2,20 @@
 #include "pico/stdlib.h"
 #include "hardware/adc.h"
 #include "hardware/pwm.h"
+#include "utils/led_tools.h"
 
 #define ADC_INPUT 0
 #define ADC_PIN 26
-#define LED_GPIO 25
+#define ONBOARD_LED 25
 
 void print_amplitude_loop() {
+    light_onboard_led(ONBOARD_LED);
+
     // Initialize inputs and outputs
     stdio_init_all();
     adc_init();
-    adc_gpio_init(ADC_PIN);       // Enable ADC on GP26 (ADC0)
-    adc_select_input(ADC_INPUT);     // Select ADC0 (connected to GP26)
+    adc_gpio_init(ADC_PIN);    
+    adc_select_input(ADC_INPUT);
 
     while (true) {;
         uint16_t min = 4095;

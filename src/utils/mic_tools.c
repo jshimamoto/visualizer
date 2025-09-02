@@ -1,4 +1,6 @@
 #include <stdint.h>
+#include <math.h>
+#include "pico/stdlib.h"
 #include "utils/mic_tools.h"
 #include "hardware/adc.h"
 
@@ -14,8 +16,9 @@ uint16_t get_baseline_mic_input(uint16_t NUM_SAMPLES) {
     uint32_t baseline_total = 0;
     for (int i = 0; i < NUM_SAMPLES; i++) {
         baseline_total += read_mic();
-        sleep_us(100);
+        sleep_ms(1);
     }
+    printf("Baseline total: %d\n", baseline_total);
     return (uint16_t)(baseline_total / NUM_SAMPLES);
 }
 

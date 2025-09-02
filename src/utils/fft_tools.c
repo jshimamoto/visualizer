@@ -1,10 +1,12 @@
 #include <stdint.h>
+#include "hardware/adc.h"
+#include "pico/time.h"
 #include "kiss_fftr.h"
 #include "utils/fft_tools.h"
-#include "pico/time.h"
+#include "utils/mic_tools.h"
 
 kiss_fftr_cfg fft_cfg;
-int16_t adc_buffer[FFT_SIZE];
+float adc_buffer[FFT_SIZE];
 kiss_fft_cpx fft_out[FFT_SIZE / 2 + 1];
 
 // Group bins logarithmically
@@ -12,7 +14,7 @@ static const int fft_5_band_ranges[5][2] = {
     {0, 5}, {6, 12}, {13, 25}, {26, 51}, {52, 64}
 };
 
-void set_fft_band_energies(uint16_t band_energies[NUM_BANDS]) {
+void set_fft_band_energies(uint16_t band_energies[NUM_BANDS], uint16_t baseline_audio_val) {
     if (!fft_cfg) {
         fft_cfg = kiss_fftr_alloc(FFT_SIZE, 0, 0, 0);
     }
@@ -21,7 +23,7 @@ void set_fft_band_energies(uint16_t band_energies[NUM_BANDS]) {
     // NOTE: Assumes adc_init() and adc_select_input() were already called from parent
     absolute_time_t next_time = get_absolute_time();
     for (int i = 0; i < FFT_SIZE; ++i) {
-        adc_buffer[i] = adc_read();
+        adc_buffer[i] = get_mic_output_filtered(baseline_audio_val);
         next_time = delayed_by_us(next_time, 100);
         sleep_until(next_time);
     }
