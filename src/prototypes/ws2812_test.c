@@ -10,7 +10,9 @@
 #include "pico/stdlib.h"
 #include "hardware/pio.h"
 #include "hardware/clocks.h"
-#include "ws2812.pio.h"
+#include "prototypes/ws2812_test.h"
+#include "ws2812_test.pio.h"
+#include "utils/led_tools.h"
 
 #define IS_RGBW false
 #define NUM_PIXELS 3
@@ -18,8 +20,7 @@
 #ifdef PICO_DEFAULT_WS2812_PIN
 #define WS2812_PIN PICO_DEFAULT_WS2812_PIN
 #else
-// default to pin 2 if the board doesn't have a default WS2812 pin defined
-#define WS2812_PIN 2
+#define WS2812_PIN 10
 #endif
 
 // Check the pin is compatible with the platform
@@ -33,18 +34,16 @@ static inline void put_pixel(PIO pio, uint sm, uint32_t pixel_grb) {
 
 static inline uint32_t urgb_u32(uint8_t r, uint8_t g, uint8_t b) {
     return
-            ((uint32_t) (r) << 8) |
-            ((uint32_t) (g) << 16) |
-            (uint32_t) (b);
+        ((uint32_t) (r) << 8) |
+        ((uint32_t) (g) << 16) |
+        (uint32_t) (b);
 }
 
 
 void ws2812_test() {
-    //set_sys_clock_48();
     stdio_init_all();
-    printf("WS2812 Smoke Test, using pin %d\n", WS2812_PIN);
+    light_onboard_led();
 
-    // todo get free sm
     PIO pio;
     uint sm;
     uint offset;
@@ -57,7 +56,6 @@ void ws2812_test() {
 
     ws2812_program_init(pio, sm, offset, WS2812_PIN, 800000, IS_RGBW);
 
-    int t = 0;
     while (1) {
         // Light all 3 red
         for (int i = 0; i < NUM_PIXELS; i++) {

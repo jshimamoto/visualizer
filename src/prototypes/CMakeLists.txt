@@ -5,6 +5,7 @@ add_library(prototypes
     pwm_led_transistor.c
     pwm_led_mic_transistor.c
     fft_5_band.c
+    ws2812_test.c
 )
 
 target_include_directories(prototypes PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -14,6 +15,9 @@ target_link_libraries(prototypes
     pico_time
     hardware_adc
     hardware_pwm
+    hardware_pio
     kissfft
     utils
 )
+
+pico_generate_pio_header(prototypes ${CMAKE_CURRENT_LIST_DIR}/ws2812_test.pio)

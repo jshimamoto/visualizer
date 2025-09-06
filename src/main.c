@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
-#include "prototypes/pwm_led_mic_transistor.h"
+#include "prototypes/ws2812_test.h"
 
 int main() {
     stdio_init_all();
     sleep_ms(2000);
 
-    pwm_led_mic_transistor();
+    ws2812_test();
 
     return 0;
 }

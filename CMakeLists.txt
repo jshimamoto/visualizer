@@ -17,8 +17,6 @@ add_executable(visualize
 
 target_link_libraries(visualize 
   pico_stdlib 
-  hardware_adc 
-  hardware_pwm
   utils
   prototypes
   kissfft

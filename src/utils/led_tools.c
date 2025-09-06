@@ -3,10 +3,12 @@
 #include "hardware/adc.h"
 #include "hardware/pwm.h"
 
-void light_onboard_led(uint8_t GPIO_PIN_NUMBER) {
-    gpio_init(GPIO_PIN_NUMBER);
-    gpio_set_dir(GPIO_PIN_NUMBER, GPIO_OUT);
-    gpio_put(GPIO_PIN_NUMBER, 1);
+#define ONBOARD_LED 25
+
+void light_onboard_led() {
+    gpio_init(ONBOARD_LED);
+    gpio_set_dir(ONBOARD_LED, GPIO_OUT);
+    gpio_put(ONBOARD_LED, 1);
 }
 
 void init_transistor_pin_out(uint GPIO_PIN_NUMBER) {
