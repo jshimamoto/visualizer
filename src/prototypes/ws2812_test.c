@@ -22,6 +22,8 @@
 
 #define WS2812_PIN 10
 
+#define FADE_STEPS 500
+
 const uint32_t red = ((uint32_t)(0x14) << 8 | (uint32_t)(0x00) << 16 | (uint32_t)(0x00));
 const uint32_t green = ((uint32_t)(0x00) << 8 | (uint32_t)(0x14) << 16 | (uint32_t)(0x00));
 const uint32_t blue = ((uint32_t)(0x00) << 8 | (uint32_t)(0x00) << 16 | (uint32_t)(0x14));
@@ -38,20 +40,27 @@ static inline uint32_t urgb_u32(uint8_t r, uint8_t g, uint8_t b) {
 }
 
 
-static inline void fade_from_to(uint32_t from_color, uint32_t to_color, uint8_t num_steps, PIO pio, uint sm) {
-    for (int i = 0; i < num_steps; i++) {
-        uint8_t r = (from_color >> 8) & 0xFF;
-        uint8_t g = (from_color >> 16) & 0xFF;
-        uint8_t b = from_color & 0xFF;
+static inline void fade_from_to(uint32_t from_color, uint32_t to_color, PIO pio, uint sm) {
+    for (int i = 0; i < FADE_STEPS; i++) {
+        uint8_t r_from = (from_color >> 8) & 0xFF;
+        uint8_t g_from = (from_color >> 16) & 0xFF;
+        uint8_t b_from = from_color & 0xFF;
+
+        uint8_t r_to = (to_color >> 8) & 0xFF;
+        uint8_t g_to = (to_color >> 16) & 0xFF;
+        uint8_t b_to = to_color & 0xFF;
+
+        uint8_t r = r_from + ((r_to - r_from) * i / FADE_STEPS);
+        uint8_t g = g_from + ((g_to - g_from) * i / FADE_STEPS);
+        uint8_t b = b_from + ((b_to - b_from) * i / FADE_STEPS);
 
         for (int j = 0; j < NUM_PIXELS; j++) {
             put_pixel(pio, sm, urgb_u32(r, g, b));
         }
 
-        sleep_ms(20);
+        sleep_ms(1);
     }
 }
-
 
 void ws2812_test() {
     stdio_init_all();
@@ -69,30 +78,10 @@ void ws2812_test() {
 
     ws2812_program_init(pio, sm, offset, WS2812_PIN, 800000, IS_RGBW);
 
-    while (1) {
-        // Light all 3 red
-        for (int i = 0; i < NUM_PIXELS; i++) {
-            put_pixel(pio, sm, urgb_u32(0x40, 0x00, 0x00)); // red
-        }
-        sleep_ms(1000);
-
-        // Light all 3 green
-        for (int i = 0; i < NUM_PIXELS; i++) {
-            put_pixel(pio, sm, urgb_u32(0x00, 0x10, 0x00)); // green
-        }
-        sleep_ms(1000);
-
-        // Light all 3 blue
-        for (int i = 0; i < NUM_PIXELS; i++) {
-            put_pixel(pio, sm, urgb_u32(0x00, 0xF0, 0x04)); // blue
-        }
-        sleep_ms(1000);
-
-        // Turn them off
-        for (int i = 0; i < NUM_PIXELS; i++) {
-            put_pixel(pio, sm, 0x00000000); // off
-        }
-        sleep_ms(1000);
+    while (true) {
+        fade_from_to(red, green, pio, sm);
+        fade_from_to(green, blue, pio, sm);
+        fade_from_to(blue, red, pio, sm);
     }
 
     // This will free resources and unload our program
