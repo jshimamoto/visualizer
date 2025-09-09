@@ -1,7 +1,9 @@
 /**
- * Copyright (c) 2020 Raspberry Pi (Trading) Ltd.
- *
- * SPDX-License-Identifier: BSD-3-Clause
+ * LEDs per strip: 35
+ * Max hex sum per LED: 21 (21.25) => round to 20
+ * Total current per LED: 5mA
+ * Total current per strip max: 175mA
+ * Total current among all strips: 1.4A
  */
 
 #include <stdio.h>
@@ -15,18 +17,14 @@
 #include "utils/led_tools.h"
 
 #define IS_RGBW false
-#define NUM_PIXELS 3
+#define NUM_PIXELS 35
+#define MAX_HEX 20
 
-#ifdef PICO_DEFAULT_WS2812_PIN
-#define WS2812_PIN PICO_DEFAULT_WS2812_PIN
-#else
 #define WS2812_PIN 10
-#endif
 
-// Check the pin is compatible with the platform
-#if WS2812_PIN >= NUM_BANK0_GPIOS
-#error Attempting to use a pin>=32 on a platform that does not support it
-#endif
+const uint32_t red = ((uint32_t)(0x14) << 8 | (uint32_t)(0x00) << 16 | (uint32_t)(0x00));
+const uint32_t green = ((uint32_t)(0x00) << 8 | (uint32_t)(0x14) << 16 | (uint32_t)(0x00));
+const uint32_t blue = ((uint32_t)(0x00) << 8 | (uint32_t)(0x00) << 16 | (uint32_t)(0x14));
 
 static inline void put_pixel(PIO pio, uint sm, uint32_t pixel_grb) {
     pio_sm_put_blocking(pio, sm, pixel_grb << 8u);
@@ -37,6 +35,21 @@ static inline uint32_t urgb_u32(uint8_t r, uint8_t g, uint8_t b) {
         ((uint32_t) (r) << 8) |
         ((uint32_t) (g) << 16) |
         (uint32_t) (b);
+}
+
+
+static inline void fade_from_to(uint32_t from_color, uint32_t to_color, uint8_t num_steps, PIO pio, uint sm) {
+    for (int i = 0; i < num_steps; i++) {
+        uint8_t r = (from_color >> 8) & 0xFF;
+        uint8_t g = (from_color >> 16) & 0xFF;
+        uint8_t b = from_color & 0xFF;
+
+        for (int j = 0; j < NUM_PIXELS; j++) {
+            put_pixel(pio, sm, urgb_u32(r, g, b));
+        }
+
+        sleep_ms(20);
+    }
 }
 
 
@@ -59,19 +72,19 @@ void ws2812_test() {
     while (1) {
         // Light all 3 red
         for (int i = 0; i < NUM_PIXELS; i++) {
-            put_pixel(pio, sm, urgb_u32(0xff, 0x00, 0x00)); // red
+            put_pixel(pio, sm, urgb_u32(0x40, 0x00, 0x00)); // red
         }
         sleep_ms(1000);
 
         // Light all 3 green
         for (int i = 0; i < NUM_PIXELS; i++) {
-            put_pixel(pio, sm, urgb_u32(0x00, 0xff, 0x00)); // green
+            put_pixel(pio, sm, urgb_u32(0x00, 0x10, 0x00)); // green
         }
         sleep_ms(1000);
 
         // Light all 3 blue
         for (int i = 0; i < NUM_PIXELS; i++) {
-            put_pixel(pio, sm, urgb_u32(0x00, 0x00, 0xff)); // blue
+            put_pixel(pio, sm, urgb_u32(0x00, 0xF0, 0x04)); // blue
         }
         sleep_ms(1000);
 
