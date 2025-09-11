@@ -22,8 +22,6 @@
 #define MAX_HEX 0x14
 
 #define WS2812_PINS {10, 11}
-#define WS2812_PIN_1 10
-#define WS2812_PIN_2 11
 
 #define FADE_STEPS 500
 
@@ -42,60 +40,52 @@ static inline uint32_t urgb_u32(uint8_t r, uint8_t g, uint8_t b) {
         (uint32_t) (b);
 }
 
-static inline void fade_from_to(uint32_t from_color, uint32_t to_color, PIO pio, uint sm) {
+static inline void fade_from_to(uint32_t from_color, uint32_t to_color, PIO pio, uint *sm_array, size_t num_strips) {
+    uint8_t r_from = (from_color >> 8) & 0xFF;
+    uint8_t g_from = (from_color >> 16) & 0xFF;
+    uint8_t b_from = from_color & 0xFF;
+
+    uint8_t r_to = (to_color >> 8) & 0xFF;
+    uint8_t g_to = (to_color >> 16) & 0xFF;
+    uint8_t b_to = to_color & 0xFF;
+
     for (int i = 0; i < FADE_STEPS; i++) {
-        uint8_t r_from = (from_color >> 8) & 0xFF;
-        uint8_t g_from = (from_color >> 16) & 0xFF;
-        uint8_t b_from = from_color & 0xFF;
-
-        uint8_t r_to = (to_color >> 8) & 0xFF;
-        uint8_t g_to = (to_color >> 16) & 0xFF;
-        uint8_t b_to = to_color & 0xFF;
-
         uint8_t r = r_from + ((r_to - r_from) * i / FADE_STEPS);
         uint8_t g = g_from + ((g_to - g_from) * i / FADE_STEPS);
         uint8_t b = b_from + ((b_to - b_from) * i / FADE_STEPS);
 
-        for (int j = 0; j < NUM_PIXELS; j++) {
-            put_pixel(pio, sm, urgb_u32(r, g, b));
+        for (int s = 0; s < num_strips; s++) {
+            for (int j = 0; j < NUM_PIXELS; j++) {
+                put_pixel(pio, sm_array[s], urgb_u32(r, g, b));
+            }
         }
 
         sleep_ms(1);
     }
 }
 
-// void pio_set_sm_and_init_ws2812_program(PIO pio, uint sm, uint offset, uint8_t gpio_pin) {
-//     bool success = pio_claim_free_sm_and_add_program_for_gpio_range(&ws2812_program, &pio, &sm, &offset, gpio_pin, 1, true);
-//     hard_assert(success);
-//     hard_assert(sm != -1);
-//     ws2812_program_init(pio, sm, offset, gpio_pin, 800000, IS_RGBW);
-// }
+void pio_set_sm_and_init_ws2812_program(PIO *pio, uint *sm, uint *offset, uint8_t gpio_pin) {
+    bool success = pio_claim_free_sm_and_add_program_for_gpio_range(&ws2812_program, pio, sm, offset, gpio_pin, 1, true);
+    hard_assert(success);
+    ws2812_program_init(*pio, *sm, *offset, gpio_pin, 800000, IS_RGBW);
+}
 
 void ws2812_multi() {
     stdio_init_all();
     light_onboard_led();
 
     PIO pio;
+    uint gpio_pin_array[NUM_STRIPS] = WS2812_PINS; 
     uint sm_array[NUM_STRIPS];
-    uint offset;
+    uint offset_array[NUM_STRIPS];
 
-    bool success = pio_claim_free_sm_and_add_program_for_gpio_range(&ws2812_program, &pio, &sm_array[0], &offset, WS2812_PIN_1, 1, true);
-    hard_assert(success);
-
-    sm_array[1] = pio_claim_unused_sm(pio, true);
-    hard_assert(sm_array[1] != -1);
-
-    ws2812_program_init(pio, sm_array[0], offset, WS2812_PIN_1, 800000, IS_RGBW);
-    ws2812_program_init(pio, sm_array[1], offset, WS2812_PIN_2, 800000, IS_RGBW);
+    for (int i = 0; i < NUM_STRIPS; i++) {
+        pio_set_sm_and_init_ws2812_program(&pio, &sm_array[i], &offset_array[i], gpio_pin_array[i]);
+    }
 
     while (true) {
-        fade_from_to(red, green, pio, sm_array);
-        fade_from_to(red, green, pio, sm_array);
-
-        fade_from_to(green, blue, pio, sm_array);
-        fade_from_to(green, blue, pio, sm_array);
-
-        fade_from_to(blue, red, pio, sm_array);
-        fade_from_to(blue, red, pio, sm_array);
+        fade_from_to(red, green, pio, sm_array, NUM_STRIPS);
+        fade_from_to(green, blue, pio, sm_array, NUM_STRIPS);
+        fade_from_to(blue, red, pio, sm_array, NUM_STRIPS);
     }
 }
