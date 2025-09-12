@@ -37,3 +37,11 @@ void fade_from_to(uint32_t from_color, uint32_t to_color, PIO pio, uint *sm_arra
         sleep_ms(1);
     }
 }
+
+void draw_visualizer(PIO pio, uint *sm_array, uint8_t *band_energies) {
+    for (int i = 0; i < NUM_STRIPS; i++) {
+        for (int j = 0; j < NUM_PIXELS; j++) {
+            if (j <= band_energies[i][j])
+        }
+    }
+}

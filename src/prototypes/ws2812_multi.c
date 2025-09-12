@@ -24,10 +24,6 @@
 
 #define FADE_STEPS 500
 
-const uint32_t red = ((uint32_t)(MAX_HEX) << 8 | (uint32_t)(0x00) << 16 | (uint32_t)(0x00));
-const uint32_t green = ((uint32_t)(0x00) << 8 | (uint32_t)(MAX_HEX) << 16 | (uint32_t)(0x00));
-const uint32_t blue = ((uint32_t)(0x00) << 8 | (uint32_t)(0x00) << 16 | (uint32_t)(MAX_HEX));
-
 void ws2812_multi() {
     stdio_init_all();
     light_onboard_led();
