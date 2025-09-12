@@ -20,5 +20,3 @@ target_link_libraries(prototypes
     kissfft
     utils
 )
-
-pico_generate_pio_header(prototypes ${CMAKE_CURRENT_LIST_DIR}/ws2812.pio)
