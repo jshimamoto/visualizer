@@ -16,15 +16,17 @@ static inline uint32_t urgb_u32(uint8_t r, uint8_t g, uint8_t b) {
 }
 
 // Colors
-const uint32_t red = ((uint32_t)(MAX_HEX) << 8 | (uint32_t)(0x00) << 16 | (uint32_t)(0x00));
-const uint32_t green = ((uint32_t)(0x00) << 8 | (uint32_t)(MAX_HEX) << 16 | (uint32_t)(0x00));
-const uint32_t blue = ((uint32_t)(0x00) << 8 | (uint32_t)(0x00) << 16 | (uint32_t)(MAX_HEX));
+#define RED = ((uint32_t)(MAX_HEX) << 8 | (uint32_t)(0x00) << 16 | (uint32_t)(0x00));
+#define GREEN = ((uint32_t)(0x00) << 8 | (uint32_t)(MAX_HEX) << 16 | (uint32_t)(0x00));
+#define BLUE = ((uint32_t)(0x00) << 8 | (uint32_t)(0x00) << 16 | (uint32_t)(MAX_HEX));
 
 // Tools
 void pio_set_sm_and_init_ws2812_program(PIO *pio, uint *sm, uint *offset, uint8_t gpio_pin);
 
 void fade_from_to(uint32_t from_color, uint32_t to_color, PIO pio, uint *sm_array);
 
-void draw_visualizer(PIO pio, uint *sm_array, uint8_t *band_energies);
+void draw_visualizer_frame(PIO pio, uint *sm_array, uint8_t *band_energy_frame);
+
+void update_energy_heights(uint8_t *new_energy_heights, uint8_t *current_heights, uint8_t decay_rate);
 
 #endif

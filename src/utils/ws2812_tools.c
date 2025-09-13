@@ -38,10 +38,34 @@ void fade_from_to(uint32_t from_color, uint32_t to_color, PIO pio, uint *sm_arra
     }
 }
 
-void draw_visualizer(PIO pio, uint *sm_array, uint8_t *band_energies) {
+void draw_visualizer_frame(PIO pio, uint *sm_array, uint8_t *band_energy_frame) {
     for (int i = 0; i < NUM_STRIPS; i++) {
+        int energy_level = band_energy_frame[i];
+
         for (int j = 0; j < NUM_PIXELS; j++) {
-            if (j <= band_energies[i][j])
+            uint32_t color;
+            if (j < energy_level) {
+                color = urgb_u32(0x00, 0x10, 0x04);
+            } else {
+                color = urgb_u32(0x00, 0x00, 0x00);
+            }
+            put_pixel(pio, sm_array[i], color);
+        }
+    }
+}
+
+void update_energy_heights(uint8_t *new_energy_heights, uint8_t *current_heights, uint8_t decay_rate) {
+    for (int i = 0; i < NUM_STRIPS; i++) {
+        uint8_t new_strip_height = new_energy_heights[i];
+        
+        if (new_strip_height > current_heights[i]) {
+            current_heights[i] = new_strip_height;
+        } else if (current_heights[i] > 0) {
+            if (current_heights[i] > decay_rate) {
+                current_heights[i] -= decay_rate;
+            } else {
+                current_heights[i] = 0;
+            }
         }
     }
 }
