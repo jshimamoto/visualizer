@@ -38,18 +38,16 @@ void fade_from_to(uint32_t from_color, uint32_t to_color, PIO pio, uint *sm_arra
     }
 }
 
-void draw_visualizer_frame(PIO pio, uint *sm_array, uint8_t *band_energy_frame) {
+void draw_visualizer_frame(PIO pio, uint *sm_array, uint8_t *band_energy_frame, uint32_t color) {
     for (int i = 0; i < NUM_STRIPS; i++) {
         int energy_level = band_energy_frame[i];
 
         for (int j = 0; j < NUM_PIXELS; j++) {
-            uint32_t color;
             if (j < energy_level) {
-                color = urgb_u32(0x00, 0x10, 0x04);
+                put_pixel(pio, sm_array[i], color);
             } else {
-                color = urgb_u32(0x00, 0x00, 0x00);
+                put_pixel(pio, sm_array[i], urgb_u32(0x00, 0x00, 0x00));
             }
-            put_pixel(pio, sm_array[i], color);
         }
     }
 }

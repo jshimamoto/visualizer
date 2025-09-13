@@ -16,24 +16,18 @@
 #include "utils/led_tools.h"
 #include "utils/ws2812_tools.h"
 
-#define NUM_PIXELS 35
-#define NUM_STRIPS 2
-#define MAX_HEX 0x14
-
-#define WS2812_PINS {10, 11}
-
-#define FADE_STEPS 500
+#define WS2812_PINS {10, 11, 12}
 
 // Simulated FFT energy data for 20 frames, two strips, 0–35 range
 // Test data: 50 frames, 2 strips
 // Values represent number of LEDs lit per strip (0–35)
-uint8_t band_energies[50][2] = {
-    {0, 0}, {5, 0}, {10, 3}, {15, 7}, {20, 10}, {25, 15}, {30, 18}, {35, 20},
-    {30, 18}, {25, 15}, {20, 10}, {15, 7}, {10, 3}, {5, 0}, {0, 0}, {3, 5},
-    {6, 10}, {12, 15}, {18, 20}, {24, 25}, {30, 28}, {35, 30}, {30, 28}, {25, 25},
-    {20, 20}, {15, 15}, {10, 10}, {5, 5}, {0, 0}, {0, 3}, {0, 6}, {0, 12},
-    {0, 18}, {0, 24}, {0, 30}, {0, 35}, {0, 30}, {0, 25}, {0, 20}, {0, 15},
-    {0, 10}, {0, 5}, {0, 0}, {5, 0}, {10, 3}, {15, 7}, {20, 10}, {25, 15}, {30, 20}, {35, 25}
+uint8_t band_energies[50][3] = {
+    {0, 0, 0}, {5, 0, 2}, {10, 3, 5}, {15, 7, 8}, {20, 10, 12}, {25, 15, 18}, {30, 18, 22}, {35, 20, 25},
+    {30, 18, 22}, {25, 15, 18}, {20, 10, 12}, {15, 7, 8}, {10, 3, 5}, {5, 0, 2}, {0, 0, 0}, {3, 5, 0},
+    {6, 10, 3}, {12, 15, 8}, {18, 20, 12}, {24, 25, 18}, {30, 28, 22}, {35, 30, 25}, {30, 28, 22}, {25, 25, 18},
+    {20, 20, 12}, {15, 15, 8}, {10, 10, 5}, {5, 5, 2}, {0, 0, 0}, {0, 3, 0}, {0, 6, 2}, {0, 12, 5},
+    {0, 18, 8}, {0, 24, 12}, {0, 30, 18}, {0, 35, 25}, {0, 30, 22}, {0, 25, 18}, {0, 20, 12}, {0, 15, 8},
+    {0, 10, 5}, {0, 5, 2}, {0, 0, 0}, {5, 0, 3}, {10, 3, 6}, {15, 7, 12}, {20, 10, 18}, {25, 15, 22}, {30, 20, 28}, {35, 25, 30}
 };
 
 
@@ -51,12 +45,29 @@ void ws2812_multi() {
     }
 
     uint8_t current_heights[NUM_STRIPS] = {0};
+    uint32_t colors[10] = {
+        urgb_u32(0x14, 0x00, 0x00), // Pure red 20+0+0=20
+        urgb_u32(0x00, 0x14, 0x00), // Pure green 0+20+0=20
+        urgb_u32(0x00, 0x00, 0x14), // Pure blue 0+0+20=20
+        urgb_u32(0x0A, 0x0A, 0x00), // Red+Green 10+10+0=20
+        urgb_u32(0x0A, 0x00, 0x0A), // Red+Blue 10+0+10=20
+        urgb_u32(0x00, 0x0A, 0x0A), // Green+Blue 0+10+10=20
+        urgb_u32(0x08, 0x06, 0x06), // Mixed RGB 8+6+6=20
+        urgb_u32(0x06, 0x08, 0x06), // Mixed RGB 6+8+6=20
+        urgb_u32(0x06, 0x06, 0x08), // Mixed RGB 6+6+8=20
+        urgb_u32(0x07, 0x07, 0x06)  // Mixed RGB 7+7+6=20
+    };
+    uint8_t color_index = 0;
 
     while (true) {
         for (int frame = 0; frame < 50; frame++) {
             update_energy_heights(band_energies[frame], current_heights, 1);
-            draw_visualizer_frame(pio, sm_array, current_heights);
+            draw_visualizer_frame(pio, sm_array, current_heights, colors[color_index]);
             sleep_ms(25);
+        }
+        color_index++;
+        if (color_index > 9) {
+            color_index = 0;
         }
     }
 }
