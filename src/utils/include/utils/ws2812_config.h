@@ -3,7 +3,7 @@
 
 #define IS_RGBW false
 #define NUM_PIXELS 35
-#define NUM_STRIPS 3
+#define NUM_STRIPS 4
 #define MAX_HEX 0x14
 #define FADE_STEPS 500
 

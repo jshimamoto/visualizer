@@ -7,11 +7,8 @@
 
 #define ADC_INPUT 0
 #define ADC_PIN 26
-#define ONBOARD_LED 25
 
 void print_amplitude_loop() {
-    light_onboard_led(ONBOARD_LED);
-
     // Initialize inputs and outputs
     stdio_init_all();
     adc_init();
