@@ -7,6 +7,7 @@ add_library(prototypes
     fft_5_band.c
     ws2812_test.c
     ws2812_multi.c
+    visualizer_4_strip.c
 )
 
 target_include_directories(prototypes PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

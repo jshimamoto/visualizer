@@ -18,7 +18,7 @@
 #define ADC_PIN 26
 
 // Mic Input
-#define BASELINE_SAMPLES    5000
+#define BASELINE_SAMPLES 5000
 
 void five_band_fft_loop() {
     light_onboard_led(ONBOARD_LED);

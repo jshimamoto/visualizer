@@ -6,5 +6,6 @@
 #define NUM_STRIPS 4
 #define MAX_HEX 0x14
 #define FADE_STEPS 500
+#define WS2812_PINS {10, 11, 12, 13}
 
 #endif
