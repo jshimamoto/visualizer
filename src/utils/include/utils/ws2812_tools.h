@@ -15,6 +15,10 @@ static inline uint32_t urgb_u32(uint8_t r, uint8_t g, uint8_t b) {
         (uint32_t) (b);
 }
 
+static inline uint8_t normalize_energy_to_pixel_count(uint32_t energy, uint16_t max_energy) {
+    return (uint8_t) (NUM_PIXELS * energy / max_energy);
+}
+
 // Colors
 #define RED ((uint32_t)(MAX_HEX) << 8 | (uint32_t)(0x00) << 16 | (uint32_t)(0x00));
 #define GREEN ((uint32_t)(0x00) << 8 | (uint32_t)(MAX_HEX) << 16 | (uint32_t)(0x00));
@@ -27,6 +31,8 @@ void fade_from_to(uint32_t from_color, uint32_t to_color, PIO pio, uint *sm_arra
 
 void draw_visualizer_frame(PIO pio, uint *sm_array, uint8_t *band_energy_frame, uint32_t color);
 
-void update_energy_heights(uint8_t *new_energy_heights, uint8_t *current_heights, uint8_t decay_rate);
+void update_energy_heights(uint8_t *new_band_energies, uint8_t *current_heights, uint8_t decay_rate);
+
+void update_energy_heights_fft(uint16_t *new_band_energies, uint8_t *current_heights, uint8_t decay_rate);
 
 #endif

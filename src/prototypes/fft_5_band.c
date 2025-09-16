@@ -17,9 +17,6 @@
 #define ADC_INPUT 0
 #define ADC_PIN 26
 
-// Mic Input
-#define BASELINE_SAMPLES 5000
-
 void five_band_fft_loop() {
     light_onboard_led(ONBOARD_LED);
 
@@ -49,7 +46,7 @@ void five_band_fft_loop() {
 
         // Initialize band energy array
         uint16_t fft_band_energies[NUM_BANDS];
-        set_fft_band_energies(fft_band_energies, baseline_audio_val);
+        set_fft_band_energies(fft_band_energies, NUM_BANDS, baseline_audio_val);
         
         // // Set PWM brightness
         for (int i = 0; i < NUM_BANDS; i ++) {

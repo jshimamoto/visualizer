@@ -5,6 +5,7 @@
 #include "hardware/pio.h"
 #include "hardware/clocks.h"
 #include "ws2812.pio.h"
+#include "utils/fft_tools.h"
 #include "utils/ws2812_tools.h"
 #include "utils/ws2812_config.h"
 
@@ -52,12 +53,29 @@ void draw_visualizer_frame(PIO pio, uint *sm_array, uint8_t *band_energy_frame, 
     }
 }
 
-void update_energy_heights(uint8_t *new_energy_heights, uint8_t *current_heights, uint8_t decay_rate) {
+void update_energy_heights(uint8_t *new_band_energies, uint8_t *current_heights, uint8_t decay_rate) {
     for (int i = 0; i < NUM_STRIPS; i++) {
-        uint8_t new_strip_height = new_energy_heights[i];
+        uint8_t new_energy_height = new_band_energies[i];
         
-        if (new_strip_height > current_heights[i]) {
-            current_heights[i] = new_strip_height;
+        if (new_energy_height > current_heights[i]) {
+            current_heights[i] = new_energy_height;
+        } else if (current_heights[i] > 0) {
+            if (current_heights[i] > decay_rate) {
+                current_heights[i] -= decay_rate;
+            } else {
+                current_heights[i] = 0;
+            }
+        }
+    }
+}
+
+void update_energy_heights_fft(uint16_t *new_band_energies, uint8_t *current_heights, uint8_t decay_rate) {
+    for (int i = 0; i < NUM_STRIPS; i++) {
+        if (new_band_energies[i] > MAX_BAND_ENERGY) new_band_energies[i] = MAX_BAND_ENERGY;
+        uint8_t normalized_height = normalize_energy_to_pixel_count(new_band_energies[i], MAX_BAND_ENERGY);
+        
+        if (normalized_height > current_heights[i]) {
+            current_heights[i] = normalized_height;
         } else if (current_heights[i] > 0) {
             if (current_heights[i] > decay_rate) {
                 current_heights[i] -= decay_rate;

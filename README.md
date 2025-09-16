@@ -5,6 +5,11 @@
 2. Run `git submodule update --init` inside the pico-sdk directory
 3. Copy the `pico_sdk_import.cmake` from the pico-sdk directory into the root of project folder
 
+## Components Used
+- Microcontroller: Raspberry Pi Pico H
+- Logic level shifter: SN74HCT125N [Datasheet](#https://www.ti.com/lit/ds/symlink/sn74hct125.pdf)
+- Microphone chip: MAX9814
+
 
 ## Libraries
 ### KissFFT

@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stdio.h>
 #include "hardware/adc.h"
 #include "pico/time.h"
 #include "kiss_fftr.h"
@@ -10,11 +11,14 @@ float adc_buffer[FFT_SIZE];
 kiss_fft_cpx fft_out[FFT_SIZE / 2 + 1];
 
 // Group bins logarithmically
-static const int fft_5_band_ranges[5][2] = {
-    {0, 5}, {6, 12}, {13, 25}, {26, 51}, {52, 64}
+static const int fft_4_band_ranges[4][2] = {
+    {0, 7},   // Band 1: Bass (covers 0–7)
+    {8, 19},  // Band 2: Low-Mids (covers 8–19)
+    {20, 39}, // Band 3: High-Mids (covers 20–39)
+    {40, 64}  // Band 4: Treble (covers 40–64)
 };
 
-void set_fft_band_energies(uint16_t band_energies[NUM_BANDS], uint16_t baseline_audio_val) {
+void set_fft_band_energies(uint16_t *band_energies, int num_bands, uint16_t baseline_audio_val) {
     if (!fft_cfg) {
         fft_cfg = kiss_fftr_alloc(FFT_SIZE, 0, 0, 0);
     }
@@ -32,14 +36,14 @@ void set_fft_band_energies(uint16_t band_energies[NUM_BANDS], uint16_t baseline_
     kiss_fftr(fft_cfg, adc_buffer, fft_out);
 
     // Zero the output array
-    for (int i = 0; i < NUM_BANDS; ++i) {
+    for (int i = 0; i < num_bands; ++i) {
         band_energies[i] = 0;
     }
 
     // Sum magnitudes in each band
-    for (int band = 0; band < NUM_BANDS; ++band) {
-        int start = (fft_5_band_ranges)[band][0];
-        int end = (fft_5_band_ranges)[band][1];
+    for (int band = 0; band < num_bands; ++band) {
+        int start = (fft_4_band_ranges)[band][0];
+        int end = (fft_4_band_ranges)[band][1];
 
         uint32_t sum = 0;
         for (int bin = start; bin <= end && bin < FFT_SIZE / 2 + 1; ++bin) {
@@ -50,6 +54,28 @@ void set_fft_band_energies(uint16_t band_energies[NUM_BANDS], uint16_t baseline_
 
         // Optionally apply log or sqrt compression here
         band_energies[band] = (uint16_t)sqrtf((float)sum);
+    }
+}
+
+void print_band_energies_8bit(uint8_t *band_energies, uint8_t num_bands) {
+    printf("Band energies: [");
+    for (int i = 0; i < num_bands; i++) {
+        if (i != num_bands - 1) {
+            printf("%d, ", band_energies[i]);
+        } else {
+            printf("%d]\n", band_energies[i]);
+        }
+    }
+}
+
+void print_band_energies_16bit(uint16_t *band_energies, uint8_t num_bands) {
+    printf("Band energies: [");
+    for (int i = 0; i < num_bands; i++) {
+        if (i != num_bands - 1) {
+            printf("%d, ", band_energies[i]);
+        } else {
+            printf("%d]\n", band_energies[i]);
+        }
     }
 }
 

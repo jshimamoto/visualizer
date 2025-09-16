@@ -1,6 +1,11 @@
 #ifndef MIC_TOOLS_H
 #define MIC_TOOLS_H
 
+// Mic component used: 
+
+// Mic Input
+#define BASELINE_SAMPLES 5000
+
 uint16_t get_baseline_mic_input(uint16_t NUM_SAMPLES);
 
 uint16_t read_mic();
