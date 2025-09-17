@@ -34,6 +34,8 @@ Many prototypes were generated during development for quick testing of component
 
 The FFT is set to run for 4 LED strips and an FFT size of 128. You can configure these settings for your implementation in [fft_tools.h](/src/utils/include/utils/fft_tools.h)
 
+Schematics for the prototypes and the final visualizer can be found in `/schematics`
+
 ## Libraries
 ### KissFFT
 This project includes `KissFFT`, licensed under the [BSD License](https://github.com/mborgerding/kissfft/blob/master/COPYING).
