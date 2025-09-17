@@ -47,7 +47,7 @@ void draw_visualizer_frame(PIO pio, uint *sm_array, uint8_t *band_energy_frame, 
             if (j < energy_level) {
                 put_pixel(pio, sm_array[i], color);
             } else {
-                put_pixel(pio, sm_array[i], urgb_u32(0x00, 0x00, 0x00));
+                put_pixel(pio, sm_array[i], urgb_u32(0x00, 0x00, 0x01));
             }
         }
     }
