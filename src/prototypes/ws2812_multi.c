@@ -32,6 +32,7 @@ void ws2812_multi() {
     light_onboard_led();
 
     PIO pio;
+    PIO pio_array[NUM_STRIPS] = {pio0, pio0, pio0, pio0};
     uint gpio_pin_array[NUM_STRIPS] = WS2812_PINS; 
     uint sm_array[NUM_STRIPS];
     uint offset_array[NUM_STRIPS];
@@ -58,7 +59,7 @@ void ws2812_multi() {
     while (true) {
         for (int frame = 0; frame < 50; frame++) {
             update_energy_heights(band_energies[frame], current_heights, 1);
-            draw_visualizer_frame(pio, sm_array, current_heights, colors[color_index]);
+            draw_visualizer_frame(pio_array, sm_array, current_heights, colors[color_index]);
             sleep_ms(25);
         }
         color_index++;

@@ -8,6 +8,7 @@ add_library(prototypes
     ws2812_test.c
     ws2812_multi.c
     visualizer_4_strip.c
+    visualizer_8_strip.c
 )
 
 target_include_directories(prototypes PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

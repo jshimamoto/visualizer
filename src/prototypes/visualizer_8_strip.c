@@ -23,9 +23,9 @@
 #include "utils/ws2812_tools.h"
 
 // File header
-#include "prototypes/visualizer_4_strip.h"
+#include "prototypes/visualizer_8_strip.h"
 
-void visualizer_4_strip() {
+void visualizer_8_strip() {
     stdio_init_all();
 
     // ADC init for mic input
@@ -34,18 +34,25 @@ void visualizer_4_strip() {
     adc_select_input(ADC_INPUT);
 
     // PIO and GPIO set up
-    PIO pio;
-    PIO pio_array[NUM_STRIPS] = {pio0, pio0, pio0, pio0};
-    uint gpio_pin_array[NUM_STRIPS] = WS2812_PINS_4; 
+    PIO pio0_instance = pio0;
+    PIO pio1_instance = pio1;
+    PIO pio_array[NUM_STRIPS] = {pio0, pio0, pio0, pio0, pio1, pio1, pio1, pio1};
+    uint gpio_pin_array[NUM_STRIPS] = WS2812_PINS_8; 
     uint sm_array[NUM_STRIPS];
     uint offset_array[NUM_STRIPS];
 
     // Set baseline audio input
     uint16_t baseline_audio_val = get_baseline_mic_input(BASELINE_SAMPLES);
-    float smoothed_band_energies[NUM_STRIPS] = {0};
     
     for (int i = 0; i < NUM_STRIPS; i++) {
-        pio_set_sm_and_init_ws2812_program(&pio, &sm_array[i], &offset_array[i], gpio_pin_array[i]);
+        PIO selected_pio;
+        if (i < 4) {
+            selected_pio = pio0_instance;   // First 4 strips on PIO0
+        } else {
+            selected_pio = pio1_instance;   // Remaining strips on PIO1
+        }
+
+        pio_set_sm_and_init_ws2812_program(&selected_pio, &sm_array[i], &offset_array[i], gpio_pin_array[i]);
     }
 
     // Animation set up
@@ -53,18 +60,13 @@ void visualizer_4_strip() {
     uint8_t current_heights[NUM_STRIPS] = {0};
 
     while (true) {
-        // Filter out ambient noise
-        uint16_t mic_filtered = get_mic_output_filtered(baseline_audio_val);
-
         // Initialize band energy array
         uint16_t fft_band_energies[NUM_STRIPS];
         set_fft_band_energies(fft_band_energies, NUM_STRIPS, baseline_audio_val);
         update_energy_heights_fft(fft_band_energies, current_heights, 1);
-        // print_band_energies_8bit((current_heights), NUM_STRIPS);
 
         // Draw visualizer
-        // update_energy_heights(fft_band_energies, current_heights, 1);
         draw_visualizer_frame(pio_array, sm_array, current_heights, color);
-        sleep_ms(25);
+        sleep_ms(10);
     }
 }

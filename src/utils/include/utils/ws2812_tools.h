@@ -29,7 +29,8 @@ void pio_set_sm_and_init_ws2812_program(PIO *pio, uint *sm, uint *offset, uint8_
 
 void fade_from_to(uint32_t from_color, uint32_t to_color, PIO pio, uint *sm_array);
 
-void draw_visualizer_frame(PIO pio, uint *sm_array, uint8_t *band_energy_frame, uint32_t color);
+// NOTE: If not manually set, the first 4 LEDs strips will be assinged to pio0
+void draw_visualizer_frame(PIO *pio_array, uint *sm_array, uint8_t *height_frame, uint32_t color);
 
 void update_energy_heights(uint8_t *new_band_energies, uint8_t *current_heights, uint8_t decay_rate);
 

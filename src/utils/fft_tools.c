@@ -18,6 +18,17 @@ static const int fft_4_band_ranges[4][2] = {
     {40, 64}  // Band 4: Treble (covers 40–64)
 };
 
+static const int fft_8_band_ranges[8][2] = {
+    {0, 3},    // Band 1: Sub-bass (very low frequencies)
+    {4, 7},    // Band 2: Bass
+    {8, 12},   // Band 3: Low-Mid
+    {13, 19},  // Band 4: Mid
+    {20, 27},  // Band 5: Upper-Mid
+    {28, 35},  // Band 6: Presence
+    {36, 47},  // Band 7: Brilliance
+    {48, 64}   // Band 8: Air (very high frequencies)
+};
+
 void set_fft_band_energies(uint16_t *band_energies, int num_bands, uint16_t baseline_audio_val) {
     if (!fft_cfg) {
         fft_cfg = kiss_fftr_alloc(FFT_SIZE, 0, 0, 0);
@@ -42,8 +53,8 @@ void set_fft_band_energies(uint16_t *band_energies, int num_bands, uint16_t base
 
     // Sum magnitudes in each band
     for (int band = 0; band < num_bands; ++band) {
-        int start = (fft_4_band_ranges)[band][0];
-        int end = (fft_4_band_ranges)[band][1];
+        int start = (fft_8_band_ranges)[band][0];
+        int end = (fft_8_band_ranges)[band][1];
 
         uint32_t sum = 0;
         for (int bin = start; bin <= end && bin < FFT_SIZE / 2 + 1; ++bin) {

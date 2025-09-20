@@ -39,9 +39,10 @@ void fade_from_to(uint32_t from_color, uint32_t to_color, PIO pio, uint *sm_arra
     }
 }
 
-void draw_visualizer_frame(PIO pio, uint *sm_array, uint8_t *band_energy_frame, uint32_t color) {
+void draw_visualizer_frame(PIO *pio_array, uint *sm_array, uint8_t *height_frame, uint32_t color) {
     for (int i = 0; i < NUM_STRIPS; i++) {
-        int energy_level = band_energy_frame[i];
+        int energy_level = height_frame[i];
+        PIO pio = pio_array[i];
 
         for (int j = 0; j < NUM_PIXELS; j++) {
             if (j < energy_level) {
