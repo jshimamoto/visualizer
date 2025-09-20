@@ -19,14 +19,14 @@ static const int fft_4_band_ranges[4][2] = {
 };
 
 static const int fft_8_band_ranges[8][2] = {
-    {0, 3},    // Band 1: Sub-bass (very low frequencies)
-    {4, 7},    // Band 2: Bass
-    {8, 12},   // Band 3: Low-Mid
-    {13, 19},  // Band 4: Mid
-    {20, 27},  // Band 5: Upper-Mid
-    {28, 35},  // Band 6: Presence
-    {36, 47},  // Band 7: Brilliance
-    {48, 64}   // Band 8: Air (very high frequencies)
+    {0, 1},     // Band 1: Sub-bass
+    {2, 3},     // Band 2: Bass
+    {4, 7},     // Band 3: Low-Mid
+    {8, 11},    // Band 4: Mid
+    {12, 19},   // Band 5: Upper-Mid
+    {20, 31},   // Band 6: Presence
+    {32, 47},   // Band 7: Brilliance
+    {48, 64}    // Band 8: Air
 };
 
 void set_fft_band_energies(uint16_t *band_energies, int num_bands, uint16_t baseline_audio_val) {
