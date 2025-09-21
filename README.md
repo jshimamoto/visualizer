@@ -25,9 +25,13 @@ pico_sdk_init()
 
 ## Components Used
 - Microcontroller: Raspberry Pi Pico H
-- Logic level shifter: SN74HCT125N [Datasheet](#https://www.ti.com/lit/ds/symlink/sn74hct125.pdf)
+    - [Datasheet](#https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf) 
+- Logic level shifter: SN74HCT125N 
+    - [Datasheet](#https://www.ti.com/lit/ds/symlink/sn74hct125.pdf)
 - Microphone chip: MAX9814
+    - [Datasheet](#https://www.analog.com/media/en/technical-documentation/data-sheets/max9814.pdf)
 - LEDs: WS2812B
+    - [Datasheet](#https://cdn-shop.adafruit.com/datasheets/WS2812B.pdf)
 
 ## Other Notes
 Many prototypes were generated during development for quick testing of components. These are included in the [prototypes](/src/prototypes) folder in the repository. You can use those to check your components for debugging or general use.
@@ -35,6 +39,10 @@ Many prototypes were generated during development for quick testing of component
 The FFT is set to run for 4 LED strips and an FFT size of 128. You can configure these settings for your implementation in [fft_tools.h](/src/utils/include/utils/fft_tools.h)
 
 Schematics for the prototypes and the final visualizer can be found in `/schematics`
+
+## Todos
+- Implement a version with an audio jack input
+    - Possibilities: [ASJ-99H-R-HT-T/R](#https://www.digikey.com/en/products/detail/adam-tech/ASJ-99H-R-HT-T-R/9833241), [IO-TJ4HF](#https://www.digikey.com/en/products/detail/io-audio-technologies/IO-TJ4HF/16716003?gclsrc=aw.ds&gad_source=1&gad_campaignid=22396809060&gbraid=0AAAAADrbLlh6q7gbxXOqPmuC6bUnFlxGn&gclid=CjwKCAjwiY_GBhBEEiwAFaghvjgFTZbfQh3csM44TE7TfjPe7T0tk1c0UkYRNDi3wllPrSz7ePETPRoCotsQAvD_BwE)
 
 ## Libraries
 ### KissFFT
@@ -49,3 +57,4 @@ This project uses the [Raspberry Pi Pico SDK](https://github.com/raspberrypi/pic
 
 The Pico SDK provides the low-level C/C++ libraries and build tools that make it possible to develop software for the RP2040 microcontroller, including support for GPIO, PIO, timers, ADC, and more.
 
+[Documentation](#https://datasheets.raspberrypi.com/pico/raspberry-pi-pico-c-sdk.pdf)
