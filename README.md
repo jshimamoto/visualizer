@@ -1,6 +1,6 @@
 # Visualizer
 
-This repository provides the code to make a music visualizer using a Raspberry Pi Pico H.
+This repository provides the code to make an neopixel LED music visualizer using a Raspberry Pi Pico H.
 
 ## Set Up
 ### Using the Pico-SDK
