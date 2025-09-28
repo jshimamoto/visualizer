@@ -17,7 +17,7 @@ void setup_pwm(uint gpio_pin) {
     pwm_set_gpio_level(gpio_pin, 0);
 }
 
-void pwm_led_transistor() {
+void main() {
     gpio_init(TRANS_BASE_PIN);
 
     gpio_init(ONBOARD_LED);

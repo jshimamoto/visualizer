@@ -4,7 +4,7 @@
 #define TRANS_BASE_PIN 20
 #define ONBOARD_LED 25
 
-void blink_led_transistor() {
+void main() {
     gpio_init(TRANS_BASE_PIN);
     gpio_set_dir(TRANS_BASE_PIN, GPIO_OUT);
 

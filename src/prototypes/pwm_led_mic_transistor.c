@@ -32,7 +32,7 @@ void setup_pwm(uint gpio_pin) {
     pwm_set_gpio_level(gpio_pin, 0);
 }
 
-void pwm_led_mic_transistor() {
+void main() {
     // Set onboard LED
     gpio_init(ONBOARD_LED);
     gpio_set_dir(ONBOARD_LED, GPIO_OUT);

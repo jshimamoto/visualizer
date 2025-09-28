@@ -9,7 +9,7 @@
 #define BAND_5_TRANS_PIN 13
 #define ONBOARD_LED      25
 
-void five_band_fft_loop();
+void main();
 
 #endif
 

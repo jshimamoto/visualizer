@@ -17,7 +17,7 @@
 #define ADC_INPUT 0
 #define ADC_PIN 26
 
-void five_band_fft_loop() {
+void main() {
     light_onboard_led(ONBOARD_LED);
 
     // Initialize brightness matrix

@@ -62,7 +62,7 @@ static inline void fade_from_to(uint32_t from_color, uint32_t to_color, PIO pio,
     }
 }
 
-void ws2812_test() {
+void main() {
     stdio_init_all();
     light_onboard_led();
 

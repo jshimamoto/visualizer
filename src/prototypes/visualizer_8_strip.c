@@ -25,7 +25,7 @@
 // File header
 #include "prototypes/visualizer_8_strip.h"
 
-void visualizer_8_strip() {
+void main() {
     stdio_init_all();
 
     // ADC init for mic input

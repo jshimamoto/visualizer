@@ -5,6 +5,6 @@
 #define ADC_INPUT 0
 #define ADC_PIN 26
 
-void visualizer_4_strip();
+void main();
 
 #endif

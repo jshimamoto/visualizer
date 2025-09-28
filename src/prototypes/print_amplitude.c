@@ -8,7 +8,7 @@
 #define ADC_INPUT 0
 #define ADC_PIN 26
 
-void print_amplitude_loop() {
+void main() {
     // Initialize inputs and outputs
     stdio_init_all();
     adc_init();
