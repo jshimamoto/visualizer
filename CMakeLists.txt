@@ -20,6 +20,7 @@ if(BUILD_MODE STREQUAL "main" OR BUILD_MODE STREQUAL "all")
 
   target_link_libraries(visualize 
     pico_stdlib
+    pico_multicore
     pico_time
     hardware_adc
     hardware_pwm

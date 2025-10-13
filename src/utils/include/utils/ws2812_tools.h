@@ -27,6 +27,8 @@ static inline uint8_t normalize_energy_to_pixel_count(uint32_t energy, uint16_t 
 // Tools
 void pio_set_sm_and_init_ws2812_program(PIO *pio, uint *sm, uint *offset, uint8_t gpio_pin);
 
+void fade_from_to_global_color(volatile uint32_t *global_color, uint32_t from_color, uint32_t to_color);
+
 void fade_from_to(uint32_t from_color, uint32_t to_color, PIO pio, uint *sm_array);
 
 // NOTE: If not manually set, the first 4 LEDs strips will be assinged to pio0

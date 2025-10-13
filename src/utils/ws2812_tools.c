@@ -15,6 +15,28 @@ void pio_set_sm_and_init_ws2812_program(PIO *pio, uint *sm, uint *offset, uint8_
     ws2812_program_init(*pio, *sm, *offset, gpio_pin, 800000, IS_RGBW);
 }
 
+// Fade color using a reference to a global color
+void fade_from_to_global_color(volatile uint32_t *global_color, uint32_t from_color, uint32_t to_color) {
+    uint8_t r_from = (from_color >> 8) & 0xFF;
+    uint8_t g_from = (from_color >> 16) & 0xFF;
+    uint8_t b_from = from_color & 0xFF;
+
+    uint8_t r_to = (to_color >> 8) & 0xFF;
+    uint8_t g_to = (to_color >> 16) & 0xFF;
+    uint8_t b_to = to_color & 0xFF;
+
+    for (int i = 0; i < FADE_STEPS; i++) {
+        uint8_t r = r_from + ((r_to - r_from) * i / FADE_STEPS);
+        uint8_t g = g_from + ((g_to - g_from) * i / FADE_STEPS);
+        uint8_t b = b_from + ((b_to - b_from) * i / FADE_STEPS);
+
+        *global_color = urgb_u32(r, g, b);
+
+        sleep_ms(5);
+    }
+}
+
+// Fade color directly on strip
 void fade_from_to(uint32_t from_color, uint32_t to_color, PIO pio, uint *sm_array) {
     uint8_t r_from = (from_color >> 8) & 0xFF;
     uint8_t g_from = (from_color >> 16) & 0xFF;
@@ -35,7 +57,7 @@ void fade_from_to(uint32_t from_color, uint32_t to_color, PIO pio, uint *sm_arra
             }
         }
 
-        sleep_ms(1);
+        sleep_ms(2);
     }
 }
 
