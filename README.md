@@ -19,6 +19,10 @@ pico_sdk_init()
 ### Setting up the visualizer
 1. Configure the settings you are using in [ws2812_config.h](/src/utils/include/utils/ws2812_config.h). These contain all the configurations necessary for your LED strips, disregard all other macros in other header files. Those are for use in other files. __Note__ the `MAX_HEX` macro is used to control brightness of the LEDs and consequently the current draw. Be mindful of your power source and make sure that the total number of power for all LEDs among all strips is suitable for your supply.
 3. To build the project, make a `/build` directory in the root of your project. From there run `cmake .. && make` to generate the build files
+   > Build Modes  
+   > Build main and all prototypes: cmake .. -DBUILD_MODE=all  
+   > Build just main: cmake .. -DBUILD_MODE=main  
+   > Build just prototypes: cmake .. -DBUILD_MODE=proto
 4. After the build completes, drag the `visualize.uf2` file to your Pico in BOOTSEL mode
 5. Visualize :)
 
