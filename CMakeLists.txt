@@ -8,7 +8,7 @@ pico_sdk_init()
 # Build mode: main | prototypes | all
 # Use with `cmake <dir> -DBUILD_MODE=main` or other options below
 set(BUILD_MODE "main" CACHE STRING "What to build: main | proto | all")
-set_property(CACHE BUILD_MODE PROPERTY STRINGS main prototypes all)
+set_property(CACHE BUILD_MODE PROPERTY STRINGS main proto all)
 
 # Add dependencies
 add_subdirectory(src/utils)

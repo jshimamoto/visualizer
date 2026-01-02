@@ -3,6 +3,25 @@
 This repository provides the code to make an neopixel sound visualizer using a Raspberry Pi Pico H.
 
 ## Set Up
+### Installing Dependencies
+It is **highly** recommended to run the compilation of this in a Linux environment. For Windows users, WSL (**W**indows **S**ubsystem for **L**inux) is a very helpful tool and can get a Linux environment running on your local machine.
+
+An ARM cross-compiler must be used to properly compile the pico-sdk source code. Run the below command to install necessary dependencies:
+```bash
+sudo apt update
+sudo apt install gcc-arm-none-eabi cmake build-essential
+```
+
+The most common source of a failed build is the use of the wrong compiler. If the `/usr/bin/cc` compiler (the native PC compiler) is used instead of the ARM cross-compiler, the build will fail. To fix this, delete your build directory, install the above dependencies, and CMake should correctly use `arm-none-eabi-gcc`.
+
+> IMPORTANT: The ARM toolchain and Pico SDK must be installed and configured **before** running CMake for the first time.
+
+If you get a build failure, verify what compiler CMake is using:
+```bash
+grep CMAKE_C_COMPILER build/CMakeCache.txt
+```
+Should output: `CMAKE_C_COMPILER:FILEPATH=.../arm-none-eabi-gcc`
+
 ### Using the Pico-SDK
 1. Make a directory for the pico-sdk and clone the repository
 2. Run `git submodule update --init` inside the pico-sdk directory
@@ -19,10 +38,10 @@ pico_sdk_init()
 ### Setting up the visualizer
 1. Configure the settings you are using in [ws2812_config.h](/src/utils/include/utils/ws2812_config.h). These contain all the configurations necessary for your LED strips, disregard all other macros in other header files. Those are for use in other files. __Note__ the `MAX_HEX` macro is used to control brightness of the LEDs and consequently the current draw. Be mindful of your power source and make sure that the total number of power for all LEDs among all strips is suitable for your supply.
 3. To build the project, make a `/build` directory in the root of your project. From there run `cmake .. && make` to generate the build files
-   > Build Modes  
-   > Build main and all prototypes: cmake .. -DBUILD_MODE=all  
-   > Build just main: cmake .. -DBUILD_MODE=main  
-   > Build just prototypes: cmake .. -DBUILD_MODE=proto
+   > ## Build Modes
+   > Build main and all prototypes: `cmake .. -DBUILD_MODE=all `   
+   > Build just main: `cmake .. -DBUILD_MODE=main`  
+   > Build just prototypes: `cmake .. -DBUILD_MODE=proto`
 4. After the build completes, drag the `visualize.uf2` file to your Pico in BOOTSEL mode
 5. Visualize :)
 
