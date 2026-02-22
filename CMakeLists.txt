@@ -38,3 +38,4 @@ endif()
 if(BUILD_MODE STREQUAL "proto" OR BUILD_MODE STREQUAL "all")
   add_subdirectory(src/prototypes)
 endif()
+

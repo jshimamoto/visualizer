@@ -1,0 +1,16 @@
+{
+    "configurations": [
+        {
+            "name": "Linux-Pico",
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-gcc-x64",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${env:PICO_SDK_PATH}/**"
+            ]
+        }
+    ],
+    "version": 4
+}

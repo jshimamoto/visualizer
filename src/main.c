@@ -91,13 +91,34 @@ void visualizer_8_strip() {
     }
 }
 
+void aux_input() {
+    // Initialize inputs and outputs
+    adc_init();
+    adc_gpio_init(28);    
+    adc_select_input(2);
+
+    while (true) {;
+        uint16_t min = 4095;
+        uint16_t max = 0;
+
+        uint16_t val = adc_read();
+        if (val < min) val = min;
+        if (val > max) val = max;
+
+        printf("Signal: %u\n", val);
+        sleep_ms(100);
+    }
+}
+
 int main() {
     stdio_init_all();
     light_onboard_led();
     sleep_ms(1000);
 
-    multicore_launch_core1(change_color_core);
-    visualizer_8_strip();
+    aux_input();
+
+    // multicore_launch_core1(change_color_core);
+    // visualizer_8_strip();
 
     return 0;
 }
