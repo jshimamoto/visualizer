@@ -4,6 +4,6 @@
 #define AUX_PIN 28
 #define ADC_INPUT 2
 
-void aux_input();
+void main();
 
 #endif

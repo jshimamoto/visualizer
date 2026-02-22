@@ -5,7 +5,7 @@
 #include "hardware/adc.h"
 #include "hardware/pwm.h"
 
-void aux_input() {
+void main() {
     // Initialize inputs and outputs
     stdio_init_all();
     sleep_ms(2000);
@@ -14,14 +14,14 @@ void aux_input() {
     adc_select_input(ADC_INPUT);
 
     while (true) {;
-        uint16_t min = 4095;
-        uint16_t max = 0;
+        uint16_t max = 4095;
+        uint16_t min = 0;
 
         uint16_t val = adc_read();
         if (val < min) val = min;
         if (val > max) val = max;
 
         printf("Signal: %u\n", val);
-        sleep_ms(1);
+        sleep_ms(100);
     }
 }
