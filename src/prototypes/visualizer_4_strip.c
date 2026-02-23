@@ -58,7 +58,7 @@ void main() {
 
         // Initialize band energy array
         uint16_t fft_band_energies[NUM_STRIPS];
-        set_fft_band_energies(fft_band_energies, NUM_STRIPS, baseline_audio_val);
+        set_fft_band_energies(fft_band_energies, NUM_STRIPS, baseline_audio_val, "MIC");
         update_energy_heights_fft(fft_band_energies, current_heights, 1);
         // print_band_energies_8bit((current_heights), NUM_STRIPS);
 

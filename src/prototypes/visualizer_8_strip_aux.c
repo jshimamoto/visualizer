@@ -21,6 +21,7 @@
 #include "utils/mic_tools.h"
 #include "utils/led_tools.h"
 #include "utils/ws2812_tools.h"
+#include "utils/aux_tools.h"
 
 // File header
 #include "prototypes/visualizer_8_strip_aux.h"
@@ -61,7 +62,7 @@ void main() {
     while (true) {
         // Initialize band energy array
         uint16_t fft_band_energies[NUM_STRIPS];
-        set_fft_band_energies(fft_band_energies, NUM_STRIPS, baseline_audio_val);
+        set_fft_band_energies(fft_band_energies, NUM_STRIPS, baseline_audio_val, INPUT_MODE);
         update_energy_heights_fft(fft_band_energies, current_heights, 1);
 
         // Draw visualizer

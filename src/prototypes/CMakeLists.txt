@@ -31,6 +31,7 @@ set(PROTOTYPE_LIST
     ws2812_multi
     visualizer_4_strip
     visualizer_8_strip
+    visualizer_8_strip_aux
 )
 
 foreach(proto ${PROTOTYPE_LIST})

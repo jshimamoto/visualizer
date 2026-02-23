@@ -46,7 +46,7 @@ void main() {
 
         // Initialize band energy array
         uint16_t fft_band_energies[NUM_BANDS];
-        set_fft_band_energies(fft_band_energies, NUM_BANDS, baseline_audio_val);
+        set_fft_band_energies(fft_band_energies, NUM_BANDS, baseline_audio_val, "MIC");
         
         // // Set PWM brightness
         for (int i = 0; i < NUM_BANDS; i ++) {

@@ -2,10 +2,12 @@
 #define MAIN_H
 
 // ADC
-#define ADC_INPUT 0
-#define ADC_PIN 26
+#define ADC_INPUT 2
+#define ADC_PIN 28
 
-void visualizer_8_strip();
+#define INPUT_MODE "AUX"
+
+void visualizer_8_strip_aux();
 
 int main();
 

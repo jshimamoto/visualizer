@@ -5,8 +5,7 @@
 #define ADC_INPUT 2
 #define ADC_PIN 28
 
-// AUX INPUT
-#define AUX_SIGNAL_BASELINE 2075
+#define INPUT_MODE "AUX"
 
 void main();
 

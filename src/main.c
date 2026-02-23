@@ -22,6 +22,7 @@
 #include "utils/mic_tools.h"
 #include "utils/led_tools.h"
 #include "utils/ws2812_tools.h"
+#include "utils/aux_tools.h"
 
 // File header
 #include "main.h"
@@ -48,7 +49,9 @@ void change_color_core() {
 }
 
 
-void visualizer_8_strip() {
+void visualizer_8_strip_aux() {
+    stdio_init_all();
+
     // ADC init for mic input
     adc_init();
     adc_gpio_init(ADC_PIN);
@@ -62,9 +65,8 @@ void visualizer_8_strip() {
     uint sm_array[NUM_STRIPS];
     uint offset_array[NUM_STRIPS];
 
-    // Set baseline audio input
-    uint16_t baseline_audio_val = get_baseline_mic_input(BASELINE_SAMPLES);
-    
+    uint16_t baseline_audio_val = AUX_SIGNAL_BASELINE;
+  
     for (int i = 0; i < NUM_STRIPS; i++) {
         PIO selected_pio;
         if (i < 4) {
@@ -82,7 +84,7 @@ void visualizer_8_strip() {
     while (true) {
         // Initialize band energy array
         uint16_t fft_band_energies[NUM_STRIPS];
-        set_fft_band_energies(fft_band_energies, NUM_STRIPS, baseline_audio_val);
+        set_fft_band_energies(fft_band_energies, NUM_STRIPS, baseline_audio_val, INPUT_MODE);
         update_energy_heights_fft(fft_band_energies, current_heights, 1);
 
         // Draw visualizer
@@ -96,10 +98,8 @@ int main() {
     light_onboard_led();
     sleep_ms(1000);
 
-    aux_input();
-
-    // multicore_launch_core1(change_color_core);
-    // visualizer_8_strip();
+    multicore_launch_core1(change_color_core);
+    visualizer_8_strip_aux();
 
     return 0;
 }

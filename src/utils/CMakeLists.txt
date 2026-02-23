@@ -3,6 +3,7 @@ add_library(utils
     fft_tools.c
     mic_tools.c
     ws2812_tools.c
+    aux_tools.c
 )
 
 target_include_directories(utils PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

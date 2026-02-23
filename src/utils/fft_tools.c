@@ -5,6 +5,7 @@
 #include "kiss_fftr.h"
 #include "utils/fft_tools.h"
 #include "utils/mic_tools.h"
+#include "utils/aux_tools.h"
 
 kiss_fftr_cfg fft_cfg;
 float adc_buffer[FFT_SIZE];
@@ -29,7 +30,7 @@ static const int fft_8_band_ranges[8][2] = {
     {48, 64}    // Band 8: Air
 };
 
-void set_fft_band_energies(uint16_t *band_energies, int num_bands, uint16_t baseline_audio_val) {
+void set_fft_band_energies(uint16_t *band_energies, int num_bands, uint16_t baseline_audio_val, char input_mode[]) {
     if (!fft_cfg) {
         fft_cfg = kiss_fftr_alloc(FFT_SIZE, 0, 0, 0);
     }
@@ -38,9 +39,16 @@ void set_fft_band_energies(uint16_t *band_energies, int num_bands, uint16_t base
     // NOTE: Assumes adc_init() and adc_select_input() were already called from parent
     absolute_time_t next_time = get_absolute_time();
     for (int i = 0; i < FFT_SIZE; ++i) {
-        adc_buffer[i] = get_mic_output_filtered(baseline_audio_val);
-        next_time = delayed_by_us(next_time, 100);
-        sleep_until(next_time);
+        if (strcmp(input_mode, "MIC")) {
+            adc_buffer[i] = get_mic_output_filtered(baseline_audio_val);
+            next_time = delayed_by_us(next_time, 100);
+            sleep_until(next_time);
+        } else if (strcmp(input_mode, "AUX"))
+        {
+            adc_buffer[i] = get_aux_input_diff(baseline_audio_val);
+            next_time = delayed_by_us(next_time, 100);
+            sleep_until(next_time);
+        }
     }
 
     // Run FFT
