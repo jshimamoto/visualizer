@@ -2,6 +2,11 @@
 
 This repository provides the code to make an neopixel sound visualizer using a Raspberry Pi Pico H.
 
+## Todo
+- [X] Aux input
+- [ ] Add 50% overlap window for FFT
+- [ ] 
+
 ## Set Up
 ### Installing Dependencies
 It is **highly** recommended to run the compilation of this in a Linux environment. For Windows users, WSL (**W**indows **S**ubsystem for **L**inux) is a very helpful tool and can get a Linux environment running on your local machine.

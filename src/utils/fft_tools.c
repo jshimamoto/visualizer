@@ -39,16 +39,15 @@ void set_fft_band_energies(uint16_t *band_energies, int num_bands, uint16_t base
     // NOTE: Assumes adc_init() and adc_select_input() were already called from parent
     absolute_time_t next_time = get_absolute_time();
     for (int i = 0; i < FFT_SIZE; ++i) {
-        if (strcmp(input_mode, "MIC")) {
+        if (strcmp(input_mode, "MIC") == 0) {
             adc_buffer[i] = get_mic_output_filtered(baseline_audio_val);
-            next_time = delayed_by_us(next_time, 100);
-            sleep_until(next_time);
-        } else if (strcmp(input_mode, "AUX"))
+        } else if (strcmp(input_mode, "AUX") == 0)
         {
             adc_buffer[i] = get_aux_input_diff(baseline_audio_val);
-            next_time = delayed_by_us(next_time, 100);
-            sleep_until(next_time);
         }
+
+        next_time = delayed_by_us(next_time, 100);
+        sleep_until(next_time);
     }
 
     // Run FFT
@@ -68,10 +67,9 @@ void set_fft_band_energies(uint16_t *band_energies, int num_bands, uint16_t base
         for (int bin = start; bin <= end && bin < FFT_SIZE / 2 + 1; ++bin) {
             int real = fft_out[bin].r;
             int imag = fft_out[bin].i;
-            sum += real * real + imag * imag;  // power = magnitude squared
+            sum += real * real + imag * imag;
         }
 
-        // Optionally apply log or sqrt compression here
         band_energies[band] = (uint16_t)sqrtf((float)sum);
     }
 }
