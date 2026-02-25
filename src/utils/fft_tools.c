@@ -19,24 +19,36 @@ static const int fft_4_band_ranges[4][2] = {
     {40, 64}  // Band 4: Treble (covers 40–64)
 };
 
+// static const int fft_8_band_ranges[8][2] = {
+//     {0, 1},     // Band 1: Sub-bass
+//     {2, 3},     // Band 2: Bass
+//     {4, 7},     // Band 3: Low-Mid
+//     {8, 11},    // Band 4: Mid
+//     {12, 19},   // Band 5: Upper-Mid
+//     {20, 31},   // Band 6: Presence
+//     {32, 47},   // Band 7: Brilliance
+//     {48, 64}    // Band 8: Air
+// };
+
 static const int fft_8_band_ranges[8][2] = {
-    {0, 1},     // Band 1: Sub-bass
-    {2, 3},     // Band 2: Bass
-    {4, 7},     // Band 3: Low-Mid
-    {8, 11},    // Band 4: Mid
-    {12, 19},   // Band 5: Upper-Mid
-    {20, 31},   // Band 6: Presence
-    {32, 47},   // Band 7: Brilliance
-    {48, 64}    // Band 8: Air
+    {2, 3},
+    {4, 6},
+    {7, 10},
+    {11, 16},
+    {17, 26},
+    {27, 40},
+    {41, 56},
+    {57, 64}
 };
 
+// Overwrites the input array with band energies from the audio sample
+// NOTE: Assumes adc_init() and adc_select_input() were already called
 void set_fft_band_energies(uint16_t *band_energies, int num_bands, uint16_t baseline_audio_val, char input_mode[]) {
     if (!fft_cfg) {
         fft_cfg = kiss_fftr_alloc(FFT_SIZE, 0, 0, 0);
     }
 
     // Fill adc_buffer with time-domain samples
-    // NOTE: Assumes adc_init() and adc_select_input() were already called from parent
     absolute_time_t next_time = get_absolute_time();
     for (int i = 0; i < FFT_SIZE; ++i) {
         if (strcmp(input_mode, "MIC") == 0) {

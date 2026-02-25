@@ -5,7 +5,6 @@ This repository provides the code to make an neopixel sound visualizer using a R
 ## Todo
 - [X] Aux input
 - [ ] Add 50% overlap window for FFT
-- [ ] 
 
 ## Set Up
 ### Installing Dependencies

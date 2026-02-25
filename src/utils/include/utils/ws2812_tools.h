@@ -15,6 +15,7 @@ static inline uint32_t urgb_u32(uint8_t r, uint8_t g, uint8_t b) {
         (uint32_t) (b);
 }
 
+// Converts the energy height to a pixel count based off of strip length
 static inline uint8_t normalize_energy_to_pixel_count(uint32_t energy, uint16_t max_energy) {
     return (uint8_t) (NUM_PIXELS * energy / max_energy);
 }
