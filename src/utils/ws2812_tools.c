@@ -61,7 +61,7 @@ void fade_from_to(uint32_t from_color, uint32_t to_color, PIO pio, uint *sm_arra
     }
 }
 
-// Draws the visualizer board based off of input strip height
+// Draws the visualizer board based off of input strip height (8x35 matrix)
 void draw_visualizer_frame(PIO *pio_array, uint *sm_array, uint8_t *height_frame, uint32_t color) {
     for (int i = 0; i < NUM_STRIPS; i++) {
         int energy_level = height_frame[i];
@@ -77,6 +77,19 @@ void draw_visualizer_frame(PIO *pio_array, uint *sm_array, uint8_t *height_frame
     }
 }
 
+// Draws the visualizer board based off of input strip height (35x8 matrix)
+void draw_visualizer_frame_landscape(PIO *pio_array, uint *sm_array, uint32_t frame[NUM_PIXELS][NUM_STRIPS], uint32_t color) {
+    for (int strip = 0; strip < NUM_STRIPS; strip++) {
+        PIO pio = pio_array[strip];
+        uint sm = sm_array[strip];
+
+        for (int px = 0; px < NUM_PIXELS; px++) {
+            put_pixel(pio, sm_array[strip], frame[strip][px]);
+        }
+    }
+}
+
+// Deprecated
 void update_energy_heights(uint8_t *new_band_energies, uint8_t *current_heights, uint8_t decay_rate) {
     for (int i = 0; i < NUM_STRIPS; i++) {
         uint8_t new_energy_height = new_band_energies[i];
@@ -96,6 +109,55 @@ void update_energy_heights(uint8_t *new_band_energies, uint8_t *current_heights,
 // Converts the FFT band energies to LED pixel counts based off of strip length
 // Increases height if greater than previous, otherwise starts the decay 
 void update_energy_heights_fft(uint16_t *new_band_energies, uint8_t *current_heights, uint8_t decay_rate) {
+    for (int i = 0; i < NUM_STRIPS; i++) {
+        if (new_band_energies[i] > MAX_BAND_ENERGY) new_band_energies[i] = MAX_BAND_ENERGY;
+        uint8_t normalized_height = normalize_energy_to_pixel_count(new_band_energies[i], MAX_BAND_ENERGY);
+        
+        if (normalized_height > current_heights[i]) {
+            current_heights[i] = normalized_height;
+        } else if (current_heights[i] > 0) {
+            if (current_heights[i] > decay_rate) {
+                current_heights[i] -= decay_rate;
+            } else {
+                current_heights[i] = 0;
+            }
+        }
+    }
+}
+
+// Transposes a 8x35 matrix to a 35x8 for easy feeding into the animation function
+void rotate_landscape_to_portrait(uint32_t raw_rows[NUM_PIXELS][NUM_STRIPS], uint32_t rotated[NUM_STRIPS][NUM_PIXELS]) {
+    for (int row = 0; row < NUM_STRIPS; row++) {
+        for (int col = 0; col < NUM_PIXELS; col++) {
+            rotated[row][col] = raw_rows[NUM_PIXELS - 1 - col][row];
+        }
+    }
+}
+
+void build_animation_frame(uint16_t *new_band_energies, uint8_t *current_heights, uint8_t decay_rate) {
+    if (FRAME_ORIENTATION == 0) {
+
+    } else if (FRAME_ORIENTATION == 1) {
+        for (int i = 0; i < NUM_STRIPS; i++) {
+            if (new_band_energies[i] > MAX_BAND_ENERGY) new_band_energies[i] = MAX_BAND_ENERGY;
+            uint8_t normalized_height = normalize_energy_to_pixel_count(new_band_energies[i], MAX_BAND_ENERGY);
+            
+            if (normalized_height > current_heights[i]) {
+                current_heights[i] = normalized_height;
+            } else if (current_heights[i] > 0) {
+                if (current_heights[i] > decay_rate) {
+                    current_heights[i] -= decay_rate;
+                } else {
+                    current_heights[i] = 0;
+                }
+            }
+        }
+    }
+}
+
+// Converts the FFT band energies to LED pixel counts based off of column height for 2D matrix
+// Increases height if greater than previous, otherwise starts the decay 
+void update_energy_heights_landscape(uint16_t *new_band_energies, uint8_t *current_heights, uint8_t decay_rate) {
     for (int i = 0; i < NUM_STRIPS; i++) {
         if (new_band_energies[i] > MAX_BAND_ENERGY) new_band_energies[i] = MAX_BAND_ENERGY;
         uint8_t normalized_height = normalize_energy_to_pixel_count(new_band_energies[i], MAX_BAND_ENERGY);

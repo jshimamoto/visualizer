@@ -24,32 +24,9 @@
 #include "utils/ws2812_tools.h"
 #include "utils/aux_tools.h"
 
-// File header
-#include "main.h"
+#include "prototypes/visualizer_landscape.h"
 
-// Color changing thread
-volatile uint32_t current_color;
-void change_color_core() {
-    const uint32_t color_cycle[] = {
-        urgb_u32(0x14, 0x00, 0x00), // red
-        urgb_u32(0x00, 0x14, 0x00), // green
-        urgb_u32(0x00, 0x00, 0x14), // blue
-        urgb_u32(0x0A, 0x0A, 0x00), // yellow
-        urgb_u32(0x0A, 0x00, 0x0A), // magenta
-        urgb_u32(0x00, 0x0A, 0x0A)  // cyan
-    };
-    const int num_colors = sizeof(color_cycle) / sizeof(color_cycle[0]);
-
-    int i = 0;
-    while (true) {
-        int next = (i + 1) % num_colors;
-        fade_from_to_global_color(&current_color, color_cycle[i], color_cycle[next]);
-        i = (i + 1) % num_colors;
-    }
-}
-
-
-void visualizer_8_strip_aux() {
+void visualizer_landscape() {
     stdio_init_all();
 
     // ADC init for mic input
@@ -79,27 +56,17 @@ void visualizer_8_strip_aux() {
     }
 
     // Animation set up
-    uint8_t current_heights[35] = {0};
+    uint32_t color = urgb_u32(0x02, 0x10, 0x02);
+    uint8_t current_heights[NUM_STRIPS] = {0};
 
     while (true) {
         // Initialize band energy array
         uint16_t fft_band_energies[NUM_STRIPS];
-        set_fft_band_energies(fft_band_energies, NUM_STRIPS, baseline_audio_val, INPUT_MODE);
+        set_fft_band_energies(fft_band_energies, NUM_STRIPS, baseline_audio_val, "AUX");
         update_energy_heights_fft(fft_band_energies, current_heights, 1);
 
         // Draw visualizer
-        draw_visualizer_frame(pio_array, sm_array, current_heights, current_color);
+        draw_visualizer_frame(pio_array, sm_array, current_heights, color);
         sleep_ms(10);
     }
-}
-
-int main() {
-    stdio_init_all();
-    light_onboard_led();
-    sleep_ms(1000);
-
-    multicore_launch_core1(change_color_core);
-    visualizer_8_strip_aux();
-
-    return 0;
 }

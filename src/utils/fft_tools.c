@@ -6,6 +6,7 @@
 #include "utils/fft_tools.h"
 #include "utils/mic_tools.h"
 #include "utils/aux_tools.h"
+#include "utils/ws2812_config.h"
 
 kiss_fftr_cfg fft_cfg;
 float adc_buffer[FFT_SIZE];
@@ -39,6 +40,55 @@ static const int fft_8_band_ranges[8][2] = {
     {27, 40},
     {41, 56},
     {57, 64}
+};
+
+static const float band_gain[NUM_STRIPS] = {
+    0.7f,   // bass (reduce)
+    0.9f,
+    1.1f,
+    1.4f,
+    1.6f,
+    1.9f,
+    2.1f,
+    2.3f    // highs (boost)
+};
+
+static const int fft_35_band_ranges[35][2] = {
+    {1, 1},
+    {2, 2},
+    {3, 3},
+    {4, 4},
+    {5, 5},
+    {6, 6},
+    {7, 7},
+    {8, 8},
+    {9, 9},
+    {10, 10},
+    {11, 11},
+    {12, 12},
+    {13, 13},
+    {14, 14},
+    {15, 16},
+    {17, 18},
+    {19, 20},
+    {21, 22},
+    {23, 24},
+    {25, 26},
+    {27, 28},
+    {29, 30},
+    {31, 32},
+    {33, 34},
+    {35, 36},
+    {37, 38},
+    {39, 40},
+    {41, 42},
+    {43, 44},
+    {45, 46},
+    {47, 48},
+    {49, 50},
+    {51, 53},
+    {54, 57},
+    {58, 64}
 };
 
 // Overwrites the input array with band energies from the audio sample
@@ -82,7 +132,7 @@ void set_fft_band_energies(uint16_t *band_energies, int num_bands, uint16_t base
             sum += real * real + imag * imag;
         }
 
-        band_energies[band] = (uint16_t)sqrtf((float)sum);
+        band_energies[band] = (uint16_t)(sqrtf((float)sum) * band_gain[band]);
     }
 }
 

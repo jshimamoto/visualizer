@@ -1,0 +1,7 @@
+#ifndef VISUALIZER_LANDSCAPE_H
+#define VISUALIZER_LANDSCAPE_H
+
+#define ADC_PIN 28
+#define ADC_INPUT 2
+
+#endif
