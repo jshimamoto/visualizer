@@ -58,7 +58,7 @@ void visualizer_landscape() {
     // Animation set up
     uint32_t color = urgb_u32(0x02, 0x10, 0x02);
     uint8_t current_heights[NUM_STRIPS] = {0};
-    
+    uint32_t animation_frame[VISUALIZER_COLS][VISUALIZER_ROWS];
 
     while (true) {
         // Initialize band energy array

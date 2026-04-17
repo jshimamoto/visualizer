@@ -34,26 +34,6 @@ void rotate_landscape_to_portrait(uint32_t raw_rows[NUM_PIXELS][NUM_STRIPS], uin
 // ============================================================================================================================================
 // ANIMATION ==================================================================================================================================
 // ============================================================================================================================================
-void build_animation_frame(uint16_t *new_band_energies, uint8_t *current_heights, uint8_t decay_rate) {
-    if (FRAME_ORIENTATION == 0) {
-
-    } else if (FRAME_ORIENTATION == 1) {
-        for (int i = 0; i < NUM_STRIPS; i++) {
-            if (new_band_energies[i] > MAX_BAND_ENERGY) new_band_energies[i] = MAX_BAND_ENERGY;
-            uint8_t normalized_height = normalize_energy_to_pixel_count(new_band_energies[i], MAX_BAND_ENERGY);
-            
-            if (normalized_height > current_heights[i]) {
-                current_heights[i] = normalized_height;
-            } else if (current_heights[i] > 0) {
-                if (current_heights[i] > decay_rate) {
-                    current_heights[i] -= decay_rate;
-                } else {
-                    current_heights[i] = 0;
-                }
-            }
-        }
-    }
-}
 
 // Deprecated
 void update_energy_heights(uint8_t *new_band_energies, uint8_t *current_heights, uint8_t decay_rate) {
@@ -92,14 +72,14 @@ void update_energy_heights_fft(uint16_t *new_band_energies, uint8_t *current_hei
     }
 }
 
-// Converts the energy height to a pixel count based off of strip length
+// Converts the energy strength array into visualizer vertical bar height
 uint8_t normalize_band_energy_to_frame_height(uint32_t *energy_array, uint8_t *frame_heights, uint16_t max_energy) {
     for (int i = 0; i < VISUALIZER_COLS; i++) {
         frame_heights[i] = (uint8_t) (VISUALIZER_ROWS * energy_array[i] / max_energy);
     }
 }
 
-void build_animation_frame(uint16_t *new_frame_heights, uint8_t *current_frame_heights, uint8_t decay_rate, uint32_t color) {
+void update_frame_heights(uint16_t *new_frame_heights, uint8_t *current_frame_heights, uint8_t decay_rate) {
     for (int i = 0; i < VISUALIZER_COLS; i++) {
         if (new_frame_heights[i] >= current_frame_heights[i]) {
             current_frame_heights[i] = new_frame_heights[i];
@@ -113,36 +93,25 @@ void build_animation_frame(uint16_t *new_frame_heights, uint8_t *current_frame_h
     }
 }
 
-void update_frame_energy_heights(uint16_t *new_frame_heights, uint8_t *current_frame_heights, uint8_t decay_rate) {
-    // Strips are oriented with the frequency band height
-    if (FRAME_ORIENTATION == 0) {
-        for (int i = 0; i < NUM_STRIPS; i++) {
-            if (new_frame_heights[i] >= current_frame_heights[i]) 
-        }
-    } 
-    // Strips are oriented perpendicular to frequency band height
-    else if (FRAME_ORIENTATION == 1) {
-        for (int i = 0; i < NUM_PIXELS; i++) {
-            
+// Writes to the input matrix for the visualizer grid for each pixel
+void build_animation_frame(uint8_t *current_frame_heights, uint32_t *animation_frame[VISUALIZER_COLS][VISUALIZER_ROWS], uint32_t color) {
+    for (int col = 0; col < VISUALIZER_COLS; col++) {
+        for (int bar_pixel = 0; bar_pixel < VISUALIZER_ROWS; bar_pixel++) {
+            if (bar_pixel > current_frame_heights[col]) {
+                animation_frame[col][bar_pixel] = urgb_u32(0x00, 0x00, 0x01);
+            } else {
+                animation_frame[col][bar_pixel] = color;
+            }
         }
     }
 }
 
-// Converts the FFT band energies to LED pixel counts based off of column height for 2D matrix
-// Increases height if greater than previous, otherwise starts the decay 
-void update_energy_heights_landscape(uint16_t *new_band_energies, uint8_t *current_heights, uint8_t decay_rate) {
-    for (int i = 0; i < NUM_STRIPS; i++) {
-        if (new_band_energies[i] > MAX_BAND_ENERGY) new_band_energies[i] = MAX_BAND_ENERGY;
-        uint8_t normalized_height = normalize_energy_to_pixel_count(new_band_energies[i], MAX_BAND_ENERGY);
-        
-        if (normalized_height > current_heights[i]) {
-            current_heights[i] = normalized_height;
-        } else if (current_heights[i] > 0) {
-            if (current_heights[i] > decay_rate) {
-                current_heights[i] -= decay_rate;
-            } else {
-                current_heights[i] = 0;
-            }
+// Draws the visualizer board from input animation frame matrix
+void draw_visualizer_frame_new(PIO *pio_array, uint *sm_array, uint32_t *animation_frame[VISUALIZER_COLS][VISUALIZER_ROWS]) {
+    for (int col = 0; col < VISUALIZER_COLS; col++) {
+        PIO pio = pio_array[col];
+        for (int bar_pixel = 0; bar_pixel < VISUALIZER_ROWS; bar_pixel++) {
+            put_pixel(pio, sm_array[col], animation_frame[col][bar_pixel]);
         }
     }
 }
