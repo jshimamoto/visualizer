@@ -5,7 +5,7 @@ This repository provides the code to make an neopixel sound visualizer using a R
 ## Todo
 - [X] Aux input
 - [ ] Add 50% overlap window for FFT
-- [ ] Add a landscape mode and do matrix math to animate the board
+- [ ] Landscape support
 
 ## Set Up
 ### Installing Dependencies
