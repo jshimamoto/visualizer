@@ -58,11 +58,12 @@ void visualizer_landscape() {
     // Animation set up
     uint32_t color = urgb_u32(0x02, 0x10, 0x02);
     uint8_t current_heights[NUM_STRIPS] = {0};
+    
 
     while (true) {
         // Initialize band energy array
-        uint16_t fft_band_energies[NUM_STRIPS];
-        set_fft_band_energies(fft_band_energies, NUM_STRIPS, baseline_audio_val, "AUX");
+        uint16_t fft_band_energies[VISUALIZER_COLS];
+        set_fft_band_energies(fft_band_energies, VISUALIZER_COLS, baseline_audio_val, "AUX");
         update_energy_heights_fft(fft_band_energies, current_heights, 1);
 
         // Draw visualizer

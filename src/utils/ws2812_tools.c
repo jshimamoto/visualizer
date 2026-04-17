@@ -72,6 +72,7 @@ void update_energy_heights(uint8_t *new_band_energies, uint8_t *current_heights,
     }
 }
 
+
 // Converts the FFT band energies to LED pixel counts based off of strip length
 // Increases height if greater than previous, otherwise starts the decay 
 void update_energy_heights_fft(uint16_t *new_band_energies, uint8_t *current_heights, uint8_t decay_rate) {
@@ -87,6 +88,42 @@ void update_energy_heights_fft(uint16_t *new_band_energies, uint8_t *current_hei
             } else {
                 current_heights[i] = 0;
             }
+        }
+    }
+}
+
+// Converts the energy height to a pixel count based off of strip length
+uint8_t normalize_band_energy_to_frame_height(uint32_t *energy_array, uint8_t *frame_heights, uint16_t max_energy) {
+    for (int i = 0; i < VISUALIZER_COLS; i++) {
+        frame_heights[i] = (uint8_t) (VISUALIZER_ROWS * energy_array[i] / max_energy);
+    }
+}
+
+void build_animation_frame(uint16_t *new_frame_heights, uint8_t *current_frame_heights, uint8_t decay_rate, uint32_t color) {
+    for (int i = 0; i < VISUALIZER_COLS; i++) {
+        if (new_frame_heights[i] >= current_frame_heights[i]) {
+            current_frame_heights[i] = new_frame_heights[i];
+        } else if (current_frame_heights[i] > 0) {
+            if (current_frame_heights[i] > decay_rate) {
+                current_frame_heights[i] -= decay_rate;
+            } else {
+                current_frame_heights[i] = 0;
+            }
+        }
+    }
+}
+
+void update_frame_energy_heights(uint16_t *new_frame_heights, uint8_t *current_frame_heights, uint8_t decay_rate) {
+    // Strips are oriented with the frequency band height
+    if (FRAME_ORIENTATION == 0) {
+        for (int i = 0; i < NUM_STRIPS; i++) {
+            if (new_frame_heights[i] >= current_frame_heights[i]) 
+        }
+    } 
+    // Strips are oriented perpendicular to frequency band height
+    else if (FRAME_ORIENTATION == 1) {
+        for (int i = 0; i < NUM_PIXELS; i++) {
+            
         }
     }
 }
@@ -122,18 +159,6 @@ void draw_visualizer_frame(PIO *pio_array, uint *sm_array, uint8_t *height_frame
             } else {
                 put_pixel(pio, sm_array[i], urgb_u32(0x00, 0x00, 0x01));
             }
-        }
-    }
-}
-
-// Draws the visualizer board based off of input strip height (35x8 matrix)
-void draw_visualizer_frame_landscape(PIO *pio_array, uint *sm_array, uint32_t frame[NUM_PIXELS][NUM_STRIPS], uint32_t color) {
-    for (int strip = 0; strip < NUM_STRIPS; strip++) {
-        PIO pio = pio_array[strip];
-        uint sm = sm_array[strip];
-
-        for (int px = 0; px < NUM_PIXELS; px++) {
-            put_pixel(pio, sm_array[strip], frame[strip][px]);
         }
     }
 }

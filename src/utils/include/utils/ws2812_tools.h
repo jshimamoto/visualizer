@@ -20,6 +20,8 @@ static inline uint8_t normalize_energy_to_pixel_count(uint32_t energy, uint16_t 
     return (uint8_t) (NUM_PIXELS * energy / max_energy);
 }
 
+uint8_t normalize_band_energy_to_frame_height(uint32_t *energy_array, uint8_t *frame_heights, uint16_t max_energy);
+
 // Colors
 #define RED ((uint32_t)(MAX_HEX) << 8 | (uint32_t)(0x00) << 16 | (uint32_t)(0x00));
 #define GREEN ((uint32_t)(0x00) << 8 | (uint32_t)(MAX_HEX) << 16 | (uint32_t)(0x00));
