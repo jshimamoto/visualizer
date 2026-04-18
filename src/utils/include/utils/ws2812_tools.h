@@ -20,8 +20,6 @@ static inline uint8_t normalize_energy_to_pixel_count(uint32_t energy, uint16_t 
     return (uint8_t) (NUM_PIXELS * energy / max_energy);
 }
 
-uint8_t normalize_band_energy_to_frame_height(uint32_t *energy_array, uint8_t *frame_heights, uint16_t max_energy);
-
 // Colors
 #define RED ((uint32_t)(MAX_HEX) << 8 | (uint32_t)(0x00) << 16 | (uint32_t)(0x00));
 #define GREEN ((uint32_t)(0x00) << 8 | (uint32_t)(MAX_HEX) << 16 | (uint32_t)(0x00));
@@ -40,5 +38,12 @@ void draw_visualizer_frame(PIO *pio_array, uint *sm_array, uint8_t *height_frame
 void update_energy_heights(uint8_t *new_band_energies, uint8_t *current_heights, uint8_t decay_rate);
 
 void update_energy_heights_fft(uint16_t *new_band_energies, uint8_t *current_heights, uint8_t decay_rate);
+
+void normalize_band_energy_to_frame_height(uint16_t *energy_array, uint8_t *frame_heights, uint16_t max_energy);
+void update_frame_heights(uint16_t *new_frame_heights, uint8_t *current_frame_heights, uint8_t decay_rate);
+void build_animation_frame(uint8_t *current_frame_heights, uint32_t animation_frame[VISUALIZER_COLS][VISUALIZER_ROWS], uint32_t color);
+void draw_visualizer_frame_new(PIO *pio_array, uint *sm_array, uint32_t animation_frame[NUM_STRIPS][NUM_PIXELS]);  
+void rotate_landscape_to_portrait(uint32_t raw_rows[VISUALIZER_COLS][VISUALIZER_ROWS], uint32_t rotated[NUM_STRIPS][NUM_PIXELS]);
+
 
 #endif

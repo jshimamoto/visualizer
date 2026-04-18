@@ -49,7 +49,7 @@ void change_color_core() {
 }
 
 
-void visualizer_8_strip_aux() {
+void visualizer_landscape() {
     stdio_init_all();
 
     // ADC init for mic input
@@ -79,16 +79,34 @@ void visualizer_8_strip_aux() {
     }
 
     // Animation set up
-    uint8_t current_heights[35] = {0};
+    uint32_t color = current_color;
+    uint8_t current_heights[NUM_STRIPS] = {0};
+    uint32_t animation_frame[VISUALIZER_COLS][VISUALIZER_ROWS];
+    uint32_t a_frame_normalized[NUM_STRIPS][NUM_PIXELS];
 
     while (true) {
         // Initialize band energy array
-        uint16_t fft_band_energies[NUM_STRIPS];
-        set_fft_band_energies(fft_band_energies, NUM_STRIPS, baseline_audio_val, INPUT_MODE);
-        update_energy_heights_fft(fft_band_energies, current_heights, 1);
+        uint16_t fft_band_energies[VISUALIZER_COLS];
+        set_fft_band_energies(fft_band_energies, VISUALIZER_COLS, baseline_audio_val, "AUX");
 
+        uint8_t new_heights[NUM_STRIPS] = {0};
+        normalize_band_energy_to_frame_height(fft_band_energies, new_heights, MAX_BAND_ENERGY);
+
+        build_animation_frame(new_heights, animation_frame, color);
+        
         // Draw visualizer
-        draw_visualizer_frame(pio_array, sm_array, current_heights, current_color);
+        if (FRAME_ORIENTATION == 0) {
+            for (int i = 0; i < NUM_STRIPS; i++) {
+                for (int j = 0; j < NUM_PIXELS; j++) {
+                    a_frame_normalized[i][j] = animation_frame[i][j];
+                }
+            }
+            draw_visualizer_frame_new(pio_array, sm_array, a_frame_normalized);
+        } else if (FRAME_ORIENTATION == 1) {
+            rotate_landscape_to_portrait(animation_frame, a_frame_normalized);
+            draw_visualizer_frame_new(pio_array, sm_array, a_frame_normalized);
+        }
+
         sleep_ms(10);
     }
 }
@@ -99,7 +117,7 @@ int main() {
     sleep_ms(1000);
 
     multicore_launch_core1(change_color_core);
-    visualizer_8_strip_aux();
+    visualizer_landscape();
 
     return 0;
 }
