@@ -122,8 +122,8 @@ void set_fft_band_energies(uint16_t *band_energies, int num_bands, uint16_t base
 
     // Sum magnitudes in each band
     for (int band = 0; band < num_bands; ++band) {
-        int start = (fft_8_band_ranges)[band][0];
-        int end = (fft_8_band_ranges)[band][1];
+        int start = (fft_35_band_ranges)[band][0];
+        int end = (fft_35_band_ranges)[band][1];
 
         uint32_t sum = 0;
         for (int bin = start; bin <= end && bin < FFT_SIZE / 2 + 1; ++bin) {
