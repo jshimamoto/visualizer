@@ -80,17 +80,21 @@ void visualizer_landscape() {
 
     // Animation set up
     uint32_t color = current_color;
-    uint8_t current_heights[NUM_STRIPS] = {0};
+    uint8_t current_heights[VISUALIZER_COLS] = {0};
     uint32_t animation_frame[VISUALIZER_COLS][VISUALIZER_ROWS];
     uint32_t a_frame_normalized[NUM_STRIPS][NUM_PIXELS];
 
     while (true) {
+        printf("Starting visualizer loop\n");
         // Initialize band energy array
         uint16_t fft_band_energies[VISUALIZER_COLS];
         set_fft_band_energies(fft_band_energies, VISUALIZER_COLS, baseline_audio_val, "AUX");
 
         uint8_t new_heights[NUM_STRIPS] = {0};
         normalize_band_energy_to_frame_height(fft_band_energies, new_heights, MAX_BAND_ENERGY);
+        for (int i = 0; i < VISUALIZER_COLS; i++) {
+            printf("height array: %d\n", fft_band_energies[i]);
+        }
 
         build_animation_frame(new_heights, animation_frame, color);
         
@@ -101,10 +105,10 @@ void visualizer_landscape() {
                     a_frame_normalized[i][j] = animation_frame[i][j];
                 }
             }
-            draw_visualizer_frame_new(pio_array, sm_array, a_frame_normalized);
+            // draw_visualizer_frame_new(pio_array, sm_array, a_frame_normalized);
         } else if (FRAME_ORIENTATION == 1) {
             rotate_landscape_to_portrait(animation_frame, a_frame_normalized);
-            draw_visualizer_frame_new(pio_array, sm_array, a_frame_normalized);
+            // draw_visualizer_frame_new(pio_array, sm_array, a_frame_normalized);
         }
 
         sleep_ms(10);
@@ -114,9 +118,8 @@ void visualizer_landscape() {
 int main() {
     stdio_init_all();
     light_onboard_led();
-    sleep_ms(1000);
+    sleep_ms(2000);
 
-    multicore_launch_core1(change_color_core);
     visualizer_landscape();
 
     return 0;

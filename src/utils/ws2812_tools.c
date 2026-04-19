@@ -114,8 +114,10 @@ void build_animation_frame(uint8_t *current_frame_heights, uint32_t animation_fr
 // Draws the visualizer board from input animation frame matrix
 void draw_visualizer_frame_new(PIO *pio_array, uint *sm_array, uint32_t animation_frame[NUM_STRIPS][NUM_PIXELS]) {   
     for (int col = 0; col < NUM_STRIPS; col++) {
+        printf(">>> COLUMN NUMBER: %d\n", col);
         PIO pio = pio_array[col];
         for (int bar_pixel = 0; bar_pixel < NUM_PIXELS; bar_pixel++) {
+            printf("    PIXEL NUMBER: %d\n", bar_pixel);
             put_pixel(pio, sm_array[col], animation_frame[col][bar_pixel]);
         }
     }
