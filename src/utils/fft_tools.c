@@ -42,7 +42,7 @@ static const int fft_8_band_ranges[8][2] = {
     {57, 64}
 };
 
-static const float band_gain[NUM_STRIPS] = {
+static const float _8_band_gain[NUM_STRIPS] = {
     0.7f,   // bass (reduce)
     0.9f,
     1.1f,
@@ -53,42 +53,44 @@ static const float band_gain[NUM_STRIPS] = {
     2.3f    // highs (boost)
 };
 
-static const int fft_35_band_ranges[35][2] = {
-    {1, 1},
-    {2, 2},
-    {3, 3},
-    {4, 4},
-    {5, 5},
-    {6, 6},
-    {7, 7},
-    {8, 8},
-    {9, 9},
-    {10, 10},
-    {11, 11},
-    {12, 12},
-    {13, 13},
-    {14, 14},
-    {15, 16},
-    {17, 18},
-    {19, 20},
-    {21, 22},
-    {23, 24},
-    {25, 26},
-    {27, 28},
-    {29, 30},
-    {31, 32},
-    {33, 34},
-    {35, 36},
-    {37, 38},
-    {39, 40},
-    {41, 42},
-    {43, 44},
-    {45, 46},
-    {47, 48},
-    {49, 50},
-    {51, 53},
-    {54, 57},
-    {58, 64}
+static const int fft_17_band_ranges[17][2] = {
+    {1, 1}, 
+    {2, 3},
+    {4, 5},
+    {6, 7},
+    {8, 9},
+    {10, 11},
+    {12, 13},
+    {14, 16},
+    {17, 20},
+    {21, 24},
+    {25, 28},
+    {29, 32},
+    {33, 36},
+    {37, 40},
+    {41, 46},
+    {47, 53},
+    {54, 64}
+};
+
+float _17_band_gain[17] = {
+    0.7f,  // bass slightly reduced
+    0.75f,
+    0.8f,
+    0.9f,
+    1.0f,
+    1.1f,
+    1.2f,
+    1.3f,
+    1.5f,  // mids
+    1.7f,
+    1.9f,
+    2.1f,
+    2.3f,
+    2.5f,
+    2.7f,
+    2.9f,
+    3.0f   // highs capped
 };
 
 // Overwrites the input array with band energies from the audio sample
@@ -122,8 +124,8 @@ void set_fft_band_energies(uint16_t *band_energies, int num_bands, uint16_t base
 
     // Sum magnitudes in each band
     for (int band = 0; band < num_bands; ++band) {
-        int start = (fft_35_band_ranges)[band][0];
-        int end = (fft_35_band_ranges)[band][1];
+        int start = (fft_17_band_ranges)[band][0];
+        int end = (fft_17_band_ranges)[band][1];
 
         uint32_t sum = 0;
         for (int bin = start; bin <= end && bin < FFT_SIZE / 2 + 1; ++bin) {
@@ -132,7 +134,7 @@ void set_fft_band_energies(uint16_t *band_energies, int num_bands, uint16_t base
             sum += real * real + imag * imag;
         }
 
-        band_energies[band] = (uint16_t)(sqrtf((float)sum));// * band_gain[band]);
+        band_energies[band] = (uint16_t)((sqrtf((float)sum)) * _17_band_gain[band]);
     }
 }
 

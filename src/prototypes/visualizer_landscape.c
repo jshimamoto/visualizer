@@ -58,13 +58,13 @@ void visualizer_landscape() {
     // Animation set up
     uint32_t color = urgb_u32(0x02, 0x10, 0x02);
     uint8_t current_heights[NUM_STRIPS] = {0};
-    uint32_t animation_frame[NUM_VIS_BARS][VIS_BAR_HEIGHT];
+    uint32_t animation_frame[TOTAL_VIS_BARS][VIS_BAR_HEIGHT];
     uint32_t a_frame_normalized[NUM_STRIPS][NUM_PIXELS];
 
     while (true) {
         // Initialize band energy array
-        uint16_t fft_band_energies[NUM_VIS_BARS];
-        set_fft_band_energies(fft_band_energies, NUM_VIS_BARS, baseline_audio_val, "AUX");
+        uint16_t fft_band_energies[TOTAL_VIS_BARS];
+        set_fft_band_energies(fft_band_energies, TOTAL_VIS_BARS, baseline_audio_val, "AUX");
 
         uint8_t new_heights[NUM_STRIPS] = {0};
         normalize_band_energy_to_frame_height(fft_band_energies, new_heights, MAX_BAND_ENERGY);

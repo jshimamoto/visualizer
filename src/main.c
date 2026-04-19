@@ -79,29 +79,35 @@ void visualizer_landscape() {
     }
 
     // Animation set up
-    uint8_t current_heights[NUM_VIS_BARS] = {0};
-    uint32_t animation_frame[NUM_VIS_BARS][VIS_BAR_HEIGHT];
+    uint8_t current_heights[NUM_DISTINCT_BARS] = {0};
+    uint8_t display_heights [TOTAL_VIS_BARS] = {0};
+    uint32_t animation_frame[TOTAL_VIS_BARS][VIS_BAR_HEIGHT];
     uint32_t a_frame_normalized[NUM_STRIPS][NUM_PIXELS];
 
     while (true) {
         uint32_t color = current_color;
         // Initialize band energy array
-        uint16_t fft_band_energies[NUM_VIS_BARS];
-        set_fft_band_energies(fft_band_energies, NUM_VIS_BARS, baseline_audio_val, INPUT_MODE);
-        printf(">>> Band energies:\n");
-        for (int i = 0; i < NUM_VIS_BARS; i++) {
-            printf("    %d: %d\n", i, fft_band_energies[i]);
-        }
+        uint16_t fft_band_energies[NUM_DISTINCT_BARS];
+        set_fft_band_energies(fft_band_energies, NUM_DISTINCT_BARS, baseline_audio_val, INPUT_MODE);
 
-        uint8_t new_heights[NUM_VIS_BARS] = {0};
+        uint8_t new_heights[NUM_DISTINCT_BARS] = {0};
         normalize_band_energy_to_frame_height(fft_band_energies, new_heights, MAX_BAND_ENERGY);
         update_frame_heights(new_heights, current_heights, 1);
-        printf(">>> Height array:\n");
-        for (int i = 0; i < NUM_VIS_BARS; i++) {
-            printf("    %d: %d\n", i, current_heights[i]);
+
+        // Left side (0–16)
+        for (int i = 0; i < 17; i++) {
+            display_heights[i] = new_heights[i];
         }
 
-        build_animation_frame(current_heights, animation_frame, color);
+        // Middle gap (17)
+        display_heights[17] = 0;
+
+        // Right side (mirror: 18–34)
+        for (int i = 0; i < 17; i++) {
+            display_heights[18 + i] = new_heights[16 - i];
+        }
+
+        build_animation_frame(display_heights, animation_frame, color);
         rotate_landscape_to_portrait(animation_frame, a_frame_normalized);
         draw_visualizer_frame_new(pio_array, sm_array, a_frame_normalized);
         
