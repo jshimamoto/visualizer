@@ -49,7 +49,7 @@ void change_color_core() {
 }
 
 
-void visualizer_8_strip_aux() {
+void visualizer_landscape() {
     stdio_init_all();
 
     // ADC init for mic input
@@ -79,16 +79,38 @@ void visualizer_8_strip_aux() {
     }
 
     // Animation set up
-    uint8_t current_heights[NUM_STRIPS] = {0};
+    uint8_t current_heights[NUM_DISTINCT_BARS] = {0};
+    uint8_t display_heights [TOTAL_VIS_BARS] = {0};
+    uint32_t animation_frame[TOTAL_VIS_BARS][VIS_BAR_HEIGHT];
+    uint32_t a_frame_normalized[NUM_STRIPS][NUM_PIXELS];
 
     while (true) {
+        uint32_t color = current_color;
         // Initialize band energy array
-        uint16_t fft_band_energies[NUM_STRIPS];
-        set_fft_band_energies(fft_band_energies, NUM_STRIPS, baseline_audio_val, INPUT_MODE);
-        update_energy_heights_fft(fft_band_energies, current_heights, 1);
+        uint16_t fft_band_energies[NUM_DISTINCT_BARS];
+        set_fft_band_energies(fft_band_energies, NUM_DISTINCT_BARS, baseline_audio_val, INPUT_MODE);
 
-        // Draw visualizer
-        draw_visualizer_frame(pio_array, sm_array, current_heights, current_color);
+        uint8_t new_heights[NUM_DISTINCT_BARS] = {0};
+        normalize_band_energy_to_frame_height(fft_band_energies, new_heights, MAX_BAND_ENERGY);
+        update_frame_heights(new_heights, current_heights, 1);
+
+        // Left side (0–16)
+        for (int i = 0; i < 17; i++) {
+            display_heights[i] = new_heights[i];
+        }
+
+        // Middle gap (17)
+        display_heights[17] = 0;
+
+        // Right side (mirror: 18–34)
+        for (int i = 0; i < 17; i++) {
+            display_heights[18 + i] = new_heights[16 - i];
+        }
+
+        build_animation_frame(display_heights, animation_frame, color);
+        rotate_landscape_to_portrait(animation_frame, a_frame_normalized);
+        draw_visualizer_frame_new(pio_array, sm_array, a_frame_normalized);
+        
         sleep_ms(10);
     }
 }
@@ -96,10 +118,10 @@ void visualizer_8_strip_aux() {
 int main() {
     stdio_init_all();
     light_onboard_led();
-    sleep_ms(1000);
+    sleep_ms(2000);
 
     multicore_launch_core1(change_color_core);
-    visualizer_8_strip_aux();
+    visualizer_landscape();
 
     return 0;
 }

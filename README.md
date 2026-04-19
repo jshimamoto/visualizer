@@ -68,10 +68,6 @@ The FFT is set to run for 8 LED strips and an FFT size of 128. You can configure
 
 Schematics for the prototypes and the final visualizer can be found in `/schematics`
 
-## Todos
-- Implement a version with an audio jack input
-    - Possibilities: [ASJ-99H-R-HT-T/R](#https://www.digikey.com/en/products/detail/adam-tech/ASJ-99H-R-HT-T-R/9833241), [IO-TJ4HF](#https://www.digikey.com/en/products/detail/io-audio-technologies/IO-TJ4HF/16716003?gclsrc=aw.ds&gad_source=1&gad_campaignid=22396809060&gbraid=0AAAAADrbLlh6q7gbxXOqPmuC6bUnFlxGn&gclid=CjwKCAjwiY_GBhBEEiwAFaghvjgFTZbfQh3csM44TE7TfjPe7T0tk1c0UkYRNDi3wllPrSz7ePETPRoCotsQAvD_BwE)
-
 ## Libraries
 ### KissFFT
 This project includes `KissFFT`, licensed under the [BSD License](https://github.com/mborgerding/kissfft/blob/master/COPYING).

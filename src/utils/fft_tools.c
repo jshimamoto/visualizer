@@ -6,6 +6,7 @@
 #include "utils/fft_tools.h"
 #include "utils/mic_tools.h"
 #include "utils/aux_tools.h"
+#include "utils/ws2812_config.h"
 
 kiss_fftr_cfg fft_cfg;
 float adc_buffer[FFT_SIZE];
@@ -41,6 +42,57 @@ static const int fft_8_band_ranges[8][2] = {
     {57, 64}
 };
 
+static const float _8_band_gain[NUM_STRIPS] = {
+    0.7f,   // bass (reduce)
+    0.9f,
+    1.1f,
+    1.4f,
+    1.6f,
+    1.9f,
+    2.1f,
+    2.3f    // highs (boost)
+};
+
+static const int fft_17_band_ranges[17][2] = {
+    {1, 1}, 
+    {2, 3},
+    {4, 5},
+    {6, 7},
+    {8, 9},
+    {10, 11},
+    {12, 13},
+    {14, 16},
+    {17, 20},
+    {21, 24},
+    {25, 28},
+    {29, 32},
+    {33, 36},
+    {37, 40},
+    {41, 46},
+    {47, 53},
+    {54, 64}
+};
+
+float _17_band_gain[17] = {
+    0.7f,  // bass slightly reduced
+    0.75f,
+    0.8f,
+    0.9f,
+    1.0f,
+    1.1f,
+    1.2f,
+    1.3f,
+    1.5f,  // mids
+    1.7f,
+    1.9f,
+    2.1f,
+    2.3f,
+    2.5f,
+    2.7f,
+    2.9f,
+    3.0f   // highs capped
+};
+
 // Overwrites the input array with band energies from the audio sample
 // NOTE: Assumes adc_init() and adc_select_input() were already called
 void set_fft_band_energies(uint16_t *band_energies, int num_bands, uint16_t baseline_audio_val, char input_mode[]) {
@@ -72,8 +124,8 @@ void set_fft_band_energies(uint16_t *band_energies, int num_bands, uint16_t base
 
     // Sum magnitudes in each band
     for (int band = 0; band < num_bands; ++band) {
-        int start = (fft_8_band_ranges)[band][0];
-        int end = (fft_8_band_ranges)[band][1];
+        int start = (fft_17_band_ranges)[band][0];
+        int end = (fft_17_band_ranges)[band][1];
 
         uint32_t sum = 0;
         for (int bin = start; bin <= end && bin < FFT_SIZE / 2 + 1; ++bin) {
@@ -82,7 +134,7 @@ void set_fft_band_energies(uint16_t *band_energies, int num_bands, uint16_t base
             sum += real * real + imag * imag;
         }
 
-        band_energies[band] = (uint16_t)sqrtf((float)sum);
+        band_energies[band] = (uint16_t)((sqrtf((float)sum)) * _17_band_gain[band]);
     }
 }
 
