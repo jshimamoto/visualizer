@@ -25,7 +25,7 @@ void pio_set_sm_and_init_ws2812_program(PIO *pio, uint *sm, uint *offset, uint8_
 // ============================================================================================================================================
 
 // Transposes a 8x35 matrix to a 35x8 for easy feeding into the animation function
-void rotate_landscape_to_portrait(uint32_t raw_rows[VISUALIZER_COLS][VISUALIZER_ROWS], uint32_t rotated[NUM_STRIPS][NUM_PIXELS]) {
+void rotate_landscape_to_portrait(uint32_t raw_rows[NUM_VIS_BARS][VIS_BAR_HEIGHT], uint32_t rotated[NUM_STRIPS][NUM_PIXELS]) {
     for (int row = 0; row < NUM_STRIPS; row++) {
         for (int col = 0; col < NUM_PIXELS; col++) {
             rotated[row][col] = raw_rows[NUM_PIXELS - 1 - col][row];
@@ -77,15 +77,15 @@ void update_energy_heights_fft(uint16_t *new_band_energies, uint8_t *current_hei
 // Converts the energy strength array into visualizer vertical bar height
 void normalize_band_energy_to_frame_height(uint16_t *energy_array, uint8_t *frame_heights, uint16_t max_energy) {
     if (max_energy == 0) return;
-    for (int i = 0; i < VISUALIZER_COLS; i++) {
+    for (int i = 0; i < NUM_VIS_BARS; i++) {
         if (energy_array[i] > MAX_BAND_ENERGY) energy_array[i] = MAX_BAND_ENERGY;
-        frame_heights[i] = (uint8_t) (VISUALIZER_ROWS * energy_array[i] / max_energy);
+        frame_heights[i] = (uint8_t) (VIS_BAR_HEIGHT * energy_array[i] / max_energy);
     }
 }
 
 // Overwrites the current frame height array with the new heights 
-void update_frame_heights(uint16_t *new_frame_heights, uint8_t *current_frame_heights, uint8_t decay_rate) {
-    for (int i = 0; i < VISUALIZER_COLS; i++) {
+void update_frame_heights(uint8_t *new_frame_heights, uint8_t *current_frame_heights, uint8_t decay_rate) {
+    for (int i = 0; i < NUM_VIS_BARS; i++) {
         if (new_frame_heights[i] >= current_frame_heights[i]) {
             current_frame_heights[i] = new_frame_heights[i];
         } else if (current_frame_heights[i] > 0) {
@@ -99,13 +99,13 @@ void update_frame_heights(uint16_t *new_frame_heights, uint8_t *current_frame_he
 }
 
 // Overwrites the input matrix for the visualizer grid for each pixel
-void build_animation_frame(uint8_t *current_frame_heights, uint32_t animation_frame[VISUALIZER_COLS][VISUALIZER_ROWS], uint32_t color) {
-    for (int col = 0; col < VISUALIZER_COLS; col++) {
-        for (int bar_pixel = 0; bar_pixel < VISUALIZER_ROWS; bar_pixel++) {
-            if (bar_pixel > current_frame_heights[col]) {
-                animation_frame[col][bar_pixel] = urgb_u32(0x00, 0x00, 0x01);
-            } else {
+void build_animation_frame(uint8_t *current_frame_heights, uint32_t animation_frame[NUM_VIS_BARS][VIS_BAR_HEIGHT], uint32_t color) {
+    for (int col = 0; col < NUM_VIS_BARS; col++) {
+        for (int bar_pixel = 0; bar_pixel < VIS_BAR_HEIGHT; bar_pixel++) {
+            if (bar_pixel < current_frame_heights[col]) {
                 animation_frame[col][bar_pixel] = color;
+            } else {
+                animation_frame[col][bar_pixel] = urgb_u32(0x00, 0x00, 0x01);
             }
         }
     }
@@ -114,10 +114,8 @@ void build_animation_frame(uint8_t *current_frame_heights, uint32_t animation_fr
 // Draws the visualizer board from input animation frame matrix
 void draw_visualizer_frame_new(PIO *pio_array, uint *sm_array, uint32_t animation_frame[NUM_STRIPS][NUM_PIXELS]) {   
     for (int col = 0; col < NUM_STRIPS; col++) {
-        printf(">>> COLUMN NUMBER: %d\n", col);
         PIO pio = pio_array[col];
         for (int bar_pixel = 0; bar_pixel < NUM_PIXELS; bar_pixel++) {
-            printf("    PIXEL NUMBER: %d\n", bar_pixel);
             put_pixel(pio, sm_array[col], animation_frame[col][bar_pixel]);
         }
     }

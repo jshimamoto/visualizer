@@ -132,7 +132,7 @@ void set_fft_band_energies(uint16_t *band_energies, int num_bands, uint16_t base
             sum += real * real + imag * imag;
         }
 
-        band_energies[band] = (uint16_t)(sqrtf((float)sum) * band_gain[band]);
+        band_energies[band] = (uint16_t)(sqrtf((float)sum));// * band_gain[band]);
     }
 }
 

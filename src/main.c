@@ -79,24 +79,29 @@ void visualizer_landscape() {
     }
 
     // Animation set up
-    uint32_t color = current_color;
-    uint8_t current_heights[VISUALIZER_COLS] = {0};
-    uint32_t animation_frame[VISUALIZER_COLS][VISUALIZER_ROWS];
+    uint8_t current_heights[NUM_VIS_BARS] = {0};
+    uint32_t animation_frame[NUM_VIS_BARS][VIS_BAR_HEIGHT];
     uint32_t a_frame_normalized[NUM_STRIPS][NUM_PIXELS];
 
     while (true) {
+        uint32_t color = current_color;
         // Initialize band energy array
-        uint16_t fft_band_energies[VISUALIZER_COLS];
-        set_fft_band_energies(fft_band_energies, VISUALIZER_COLS, baseline_audio_val, INPUT_MODE);
-
-        uint8_t new_heights[VISUALIZER_COLS] = {0};
-        normalize_band_energy_to_frame_height(fft_band_energies, new_heights, MAX_BAND_ENERGY);
-        printf(">>> Height array:\n");
-        for (int i = 0; i < VISUALIZER_COLS; i++) {
-            printf("    %d: %d\n", i, new_heights[i]);
+        uint16_t fft_band_energies[NUM_VIS_BARS];
+        set_fft_band_energies(fft_band_energies, NUM_VIS_BARS, baseline_audio_val, INPUT_MODE);
+        printf(">>> Band energies:\n");
+        for (int i = 0; i < NUM_VIS_BARS; i++) {
+            printf("    %d: %d\n", i, fft_band_energies[i]);
         }
 
-        build_animation_frame(new_heights, animation_frame, color);
+        uint8_t new_heights[NUM_VIS_BARS] = {0};
+        normalize_band_energy_to_frame_height(fft_band_energies, new_heights, MAX_BAND_ENERGY);
+        update_frame_heights(new_heights, current_heights, 1);
+        printf(">>> Height array:\n");
+        for (int i = 0; i < NUM_VIS_BARS; i++) {
+            printf("    %d: %d\n", i, current_heights[i]);
+        }
+
+        build_animation_frame(current_heights, animation_frame, color);
         rotate_landscape_to_portrait(animation_frame, a_frame_normalized);
         draw_visualizer_frame_new(pio_array, sm_array, a_frame_normalized);
         
@@ -109,7 +114,7 @@ int main() {
     light_onboard_led();
     sleep_ms(2000);
 
-    
+    multicore_launch_core1(change_color_core);
     visualizer_landscape();
 
     return 0;
