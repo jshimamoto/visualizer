@@ -56,34 +56,38 @@ void visualizer_landscape() {
     }
 
     // Animation set up
-    uint32_t color = urgb_u32(0x02, 0x10, 0x02);
-    uint8_t current_heights[NUM_STRIPS] = {0};
+    uint8_t current_heights[NUM_DISTINCT_BARS] = {0};
+    uint8_t display_heights [TOTAL_VIS_BARS] = {0};
     uint32_t animation_frame[TOTAL_VIS_BARS][VIS_BAR_HEIGHT];
     uint32_t a_frame_normalized[NUM_STRIPS][NUM_PIXELS];
 
     while (true) {
+        uint32_t color = urgb_u32(0x00, 0x0A, 0x0A);
         // Initialize band energy array
-        uint16_t fft_band_energies[TOTAL_VIS_BARS];
-        set_fft_band_energies(fft_band_energies, TOTAL_VIS_BARS, baseline_audio_val, "AUX");
+        uint16_t fft_band_energies[NUM_DISTINCT_BARS];
+        set_fft_band_energies(fft_band_energies, NUM_DISTINCT_BARS, baseline_audio_val, INPUT_MODE);
 
-        uint8_t new_heights[NUM_STRIPS] = {0};
+        uint8_t new_heights[NUM_DISTINCT_BARS] = {0};
         normalize_band_energy_to_frame_height(fft_band_energies, new_heights, MAX_BAND_ENERGY);
+        update_frame_heights(new_heights, current_heights, 1);
 
-        build_animation_frame(new_heights, animation_frame, color);
-
-        // Draw visualizer
-        if (FRAME_ORIENTATION == 0) {
-            for (int i = 0; i < NUM_STRIPS; i++) {
-                for (int j = 0; j < NUM_PIXELS; j++) {
-                    a_frame_normalized[i][j] = animation_frame[i][j];
-                }
-            }
-            draw_visualizer_frame_new(pio_array, sm_array, a_frame_normalized);
-        } else if (FRAME_ORIENTATION == 1) {
-            rotate_landscape_to_portrait(animation_frame, a_frame_normalized);
-            draw_visualizer_frame_new(pio_array, sm_array, a_frame_normalized);
+        // Left side (0–16)
+        for (int i = 0; i < 17; i++) {
+            display_heights[i] = new_heights[i];
         }
 
+        // Middle gap (17)
+        display_heights[17] = 0;
+
+        // Right side (mirror: 18–34)
+        for (int i = 0; i < 17; i++) {
+            display_heights[18 + i] = new_heights[16 - i];
+        }
+
+        build_animation_frame(display_heights, animation_frame, color);
+        rotate_landscape_to_portrait(animation_frame, a_frame_normalized);
+        draw_visualizer_frame_new(pio_array, sm_array, a_frame_normalized);
+        
         sleep_ms(10);
     }
 }

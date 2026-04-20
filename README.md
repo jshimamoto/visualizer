@@ -3,6 +3,7 @@
 This repository provides the code to make an neopixel sound visualizer using a Raspberry Pi Pico H.
 
 ## Todo
+- [ ] Separate cores for render and sampling w/ continuous sampling
 - [ ] Add 50% overlap window for FFT
 - [ ] Wire in an adjustable gain amplifier
 
