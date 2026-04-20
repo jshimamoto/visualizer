@@ -3,9 +3,16 @@
 This repository provides the code to make an neopixel sound visualizer using a Raspberry Pi Pico H.
 
 ## Todo
-- [X] Aux input
 - [ ] Add 50% overlap window for FFT
-- [ ] Landscape support
+- [ ] Wire in an adjustable gain amplifier
+
+## Long term goals
+- Full size 16x64 board (32 bar display mirrored)
+- Independent Low, Mid, High gain control
+- Switch for changing between mic and aux mode
+- Button to switch between landscape and portrait display
+- PCB
+- 3D print a case for the unit
 
 ## Set Up
 ### Installing Dependencies
