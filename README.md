@@ -69,6 +69,11 @@ pico_sdk_init()
 - LEDs: WS2812B
     - [Datasheet](#https://cdn-shop.adafruit.com/datasheets/WS2812B.pdf)
 
+## Future Potential Components
+- [Buck Step Down](#https://hobbymatehobby.com/products/mini-mp1584en-dc-dc-buck-adjustable-step-down-module-4-5v-28v-input-0-8v-20v-output?utm_source=chatgpt.com)
+- [Buck power module](#https://www.digikey.com/en/products/detail/dfrobot/DFR0571/9559261?gclsrc=aw.ds&gad_source=1&gad_campaignid=20243136172&gclid=Cj0KCQiA7-rMBhCFARIsAKnLKtBFGtrd8SKaNWuQaoNGPcS0nrhf44auLHEx53hOGSQ1S4wYJY3PcA8aAniuEALw_wcB)
+- 
+
 ## Other Notes
 Many prototypes were generated during development for quick testing of components. These are included in the [prototypes](/src/prototypes) folder in the repository. You can use those to check your components for debugging or general use.
 

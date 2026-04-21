@@ -94,8 +94,8 @@ void visualizer_landscape() {
         normalize_band_energy_to_frame_height(fft_band_energies, new_heights, MAX_BAND_ENERGY);
         update_frame_heights(new_heights, current_heights, 1);
 
-        // Left side (0–16)
-        for (int i = 0; i < 17; i++) {
+        // Right side (0–16)
+        for (int i = 0; i < 18; i++) {
             display_heights[i] = new_heights[i];
         }
 

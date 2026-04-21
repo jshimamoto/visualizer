@@ -93,6 +93,48 @@ float _17_band_gain[17] = {
     3.0f   // highs capped
 };
 
+static const int fft_18_band_ranges[18][2] = {
+    {1, 1}, 
+    {2, 3},
+    {4, 5},
+    {6, 7},
+    {8, 9},
+    {10, 11},
+    {12, 13},
+    {14, 16},
+    {17, 20},
+    {21, 24},
+    {25, 28},
+    {29, 32},
+    {33, 36},
+    {37, 40},
+    {41, 46},
+    {47, 50},
+    {51, 53},
+    {54, 64}
+};
+
+float _18_band_gain[18] = {
+    0.7f,
+    0.75f,
+    0.8f,
+    0.9f,
+    1.0f,
+    1.1f,
+    1.2f,
+    1.3f,
+    1.45f,
+    1.6f,
+    1.8f,
+    2.0f,
+    2.2f,
+    2.4f,
+    2.6f,
+    2.75f,
+    2.9f,
+    3.0f
+};
+
 // Overwrites the input array with band energies from the audio sample
 // NOTE: Assumes adc_init() and adc_select_input() were already called
 void set_fft_band_energies(uint16_t *band_energies, int num_bands, uint16_t baseline_audio_val, char input_mode[]) {
@@ -135,6 +177,79 @@ void set_fft_band_energies(uint16_t *band_energies, int num_bands, uint16_t base
         }
 
         band_energies[band] = (uint16_t)((sqrtf((float)sum)) * _17_band_gain[band]);
+    }
+}
+
+// Overwrites the input array with band energies from the audio sample
+// Uses a 50% FFT overlap to minimize missed beats
+// NOTE: Assumes adc_init() and adc_select_input() were already called
+void set_fft_band_energies_overlap(uint16_t *band_energies,
+                          int num_bands,
+                          uint16_t baseline_audio_val,
+                          char input_mode[]) {
+
+    static bool initialized = false;
+
+    if (!fft_cfg) {
+        fft_cfg = kiss_fftr_alloc(FFT_SIZE, 0, 0, 0);
+    }
+
+    absolute_time_t next_time = get_absolute_time();
+
+    if (!initialized) {
+        for (int i = 0; i < FFT_SIZE; ++i) {
+            if (strcmp(input_mode, "MIC") == 0) {
+                adc_buffer[i] = get_mic_output_filtered(baseline_audio_val);
+            } else {
+                adc_buffer[i] = get_aux_input_diff(baseline_audio_val);
+            }
+
+            next_time = delayed_by_us(next_time, 100);
+            sleep_until(next_time);
+        }
+        initialized = true;
+    } else {
+        memmove(adc_buffer,
+                adc_buffer + FFT_SIZE / 2,
+                (FFT_SIZE / 2) * sizeof(float));
+
+        for (int i = FFT_SIZE / 2; i < FFT_SIZE; ++i) {
+            if (strcmp(input_mode, "MIC") == 0) {
+                adc_buffer[i] = get_mic_output_filtered(baseline_audio_val);
+            } else {
+                adc_buffer[i] = get_aux_input_diff(baseline_audio_val);
+            }
+
+            next_time = delayed_by_us(next_time, 100);
+            sleep_until(next_time);
+        }
+    }
+
+    static float windowed[FFT_SIZE];
+
+    for (int i = 0; i < FFT_SIZE; i++) {
+        float w = 0.5f * (1.0f - cosf(2.0f * M_PI * i / (FFT_SIZE - 1)));
+        windowed[i] = adc_buffer[i] * w;
+    }
+
+    kiss_fftr(fft_cfg, windowed, fft_out);
+
+    for (int i = 0; i < num_bands; ++i) {
+        band_energies[i] = 0;
+    }
+
+    for (int band = 0; band < num_bands; ++band) {
+        int start = fft_17_band_ranges[band][0];
+        int end   = fft_17_band_ranges[band][1];
+
+        uint32_t sum = 0;
+        for (int bin = start; bin <= end && bin < FFT_SIZE / 2 + 1; ++bin) {
+            int real = fft_out[bin].r;
+            int imag = fft_out[bin].i;
+            sum += real * real + imag * imag;
+        }
+
+        band_energies[band] = (uint16_t)(sqrtf((float)sum) * _17_band_gain[band]);
     }
 }
 

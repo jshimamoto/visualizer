@@ -8,9 +8,12 @@
 #define MAX_BAND_ENERGY         20000
 #define BAND_ENERGY_THRESHOLD   500
 
+#define M_PI 3.14159265358979323846
+
 static const int fft_5_band_ranges[5][2];
 
 void set_fft_band_energies(uint16_t *band_energies, int num_bands, uint16_t baseline_audio_val, char input_mode[]);
+void set_fft_band_energies_overlap(uint16_t *band_energies, int num_bands, uint16_t baseline_audio_val, char input_mode[]);
 
 void print_band_energies_8bit(uint8_t *band_energies, uint8_t num_bands);
 void print_band_energies_16bit(uint16_t *band_energies, uint8_t num_bands);
