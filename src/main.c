@@ -121,6 +121,7 @@ int main() {
     stdio_init_all();
     light_onboard_led();
     sleep_ms(2000);
+    init_buffers();
 
     multicore_launch_core1(sampling_core);
     visualizer_landscape();

@@ -1,6 +1,6 @@
 #include "pico/stdlib.h"
 #include "hardware/adc.h"
-#include "sampling_tools.h"
+#include "utils/sampling_tools.h"
 #include "utils/fft_tools.h"
 #include "utils/ws2812_tools.h"
 #include "utils/aux_tools.h"
@@ -10,11 +10,13 @@
 uint16_t fft_band_energies_A[NUM_DISTINCT_BARS];
 uint16_t fft_band_energies_B[NUM_DISTINCT_BARS];
 
-volatile uint16_t *write_buffer;
-volatile uint16_t *read_buffer;
+uint16_t *write_buffer;
+uint16_t *read_buffer;
 
-write_buffer = fft_band_energies_A;
-read_buffer  = fft_band_energies_B;
+void init_buffers(void) {
+    write_buffer = fft_band_energies_A;
+    read_buffer  = fft_band_energies_B;
+}
 
 volatile bool new_data_ready = false;
 

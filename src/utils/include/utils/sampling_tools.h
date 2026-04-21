@@ -1,3 +1,5 @@
+#include "pico/stdlib.h"
+
 #ifndef SAMPLING_TOOLS_H
 #define SAMPLING_TOOLS_H
 
@@ -7,11 +9,12 @@
 
 #define INPUT_MODE "AUX"
 
-extern volatile uint16_t *write_buffer;
-extern volatile uint16_t *read_buffer;
+extern uint16_t *write_buffer;
+extern uint16_t *read_buffer;
 
 extern volatile bool new_data_ready;
 
+void init_buffers(void);
 void sampling_core();
 
 #endif
