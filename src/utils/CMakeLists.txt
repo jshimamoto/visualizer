@@ -4,6 +4,7 @@ add_library(utils
     mic_tools.c
     ws2812_tools.c
     aux_tools.c
+    sampling_tools.c
 )
 
 target_include_directories(utils PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

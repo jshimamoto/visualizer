@@ -23,6 +23,7 @@
 #include "utils/led_tools.h"
 #include "utils/ws2812_tools.h"
 #include "utils/aux_tools.h"
+#include "utils/sampling_tools.h"
 
 // File header
 #include "main.h"
@@ -48,7 +49,7 @@ void change_color_core() {
     }
 }
 
-
+// Animation Logic
 void visualizer_landscape() {
     stdio_init_all();
 
@@ -64,8 +65,6 @@ void visualizer_landscape() {
     uint gpio_pin_array[NUM_STRIPS] = WS2812_PINS_8; 
     uint sm_array[NUM_STRIPS];
     uint offset_array[NUM_STRIPS];
-
-    uint16_t baseline_audio_val = AUX_SIGNAL_BASELINE;
   
     for (int i = 0; i < NUM_STRIPS; i++) {
         PIO selected_pio;
@@ -79,6 +78,7 @@ void visualizer_landscape() {
     }
 
     // Animation set up
+    uint16_t fft_band_energies[NUM_DISTINCT_BARS];
     uint8_t current_heights[NUM_DISTINCT_BARS] = {0};
     uint8_t display_heights [TOTAL_VIS_BARS] = {0};
     uint32_t animation_frame[TOTAL_VIS_BARS][VIS_BAR_HEIGHT];
@@ -86,10 +86,12 @@ void visualizer_landscape() {
 
     while (true) {
         uint32_t color = current_color;
-        // Initialize band energy array
-        uint16_t fft_band_energies[NUM_DISTINCT_BARS];
-        set_fft_band_energies(fft_band_energies, NUM_DISTINCT_BARS, baseline_audio_val, INPUT_MODE);
-
+        if (new_data_ready) {
+            for (int i = 0; i < NUM_DISTINCT_BARS; i++) {
+                fft_band_energies[i] = read_buffer[i];
+            }
+        }
+        
         uint8_t new_heights[NUM_DISTINCT_BARS] = {0};
         normalize_band_energy_to_frame_height(fft_band_energies, new_heights, MAX_BAND_ENERGY);
         update_frame_heights(new_heights, current_heights, 1);
@@ -107,11 +109,11 @@ void visualizer_landscape() {
             display_heights[18 + i] = new_heights[16 - i];
         }
 
-        build_animation_frame(display_heights, animation_frame, color);
+        build_animation_frame(display_heights, animation_frame, urgb_u32(0x00, 0x14, 0x00));
         rotate_landscape_to_portrait(animation_frame, a_frame_normalized);
         draw_visualizer_frame_new(pio_array, sm_array, a_frame_normalized);
         
-        sleep_ms(10);
+        sleep_ms(5);
     }
 }
 
@@ -120,7 +122,7 @@ int main() {
     light_onboard_led();
     sleep_ms(2000);
 
-    multicore_launch_core1(change_color_core);
+    multicore_launch_core1(sampling_core);
     visualizer_landscape();
 
     return 0;
