@@ -60,10 +60,8 @@ void main() {
         uint16_t fft_band_energies[NUM_STRIPS];
         set_fft_band_energies(fft_band_energies, NUM_STRIPS, baseline_audio_val, "MIC");
         update_energy_heights_fft(fft_band_energies, current_heights, 1);
-        // print_band_energies_8bit((current_heights), NUM_STRIPS);
 
         // Draw visualizer
-        // update_energy_heights(fft_band_energies, current_heights, 1);
         draw_visualizer_frame(pio_array, sm_array, current_heights, color);
         sleep_ms(25);
     }

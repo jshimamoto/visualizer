@@ -86,7 +86,7 @@ void visualizer_landscape() {
 
         build_animation_frame(display_heights, animation_frame, color);
         rotate_landscape_to_portrait(animation_frame, a_frame_normalized);
-        draw_visualizer_frame_new(pio_array, sm_array, a_frame_normalized);
+        draw_visualizer_frame_matrix(pio_array, sm_array, a_frame_normalized);
         
         sleep_ms(10);
     }

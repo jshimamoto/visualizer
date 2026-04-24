@@ -37,7 +37,7 @@ void rotate_landscape_to_portrait(uint32_t raw_rows[TOTAL_VIS_BARS][VIS_BAR_HEIG
 // ANIMATION ==================================================================================================================================
 // ============================================================================================================================================
 
-// Deprecated
+// Only used in ws2812_multi.c for manual creation of heights
 void update_energy_heights(uint8_t *new_band_energies, uint8_t *current_heights, uint8_t decay_rate) {
     for (int i = 0; i < NUM_STRIPS; i++) {
         uint8_t new_energy_height = new_band_energies[i];
@@ -112,7 +112,7 @@ void build_animation_frame(uint8_t *current_frame_heights, uint32_t animation_fr
 }
 
 // Draws the visualizer board from input animation frame matrix
-void draw_visualizer_frame_new(PIO *pio_array, uint *sm_array, uint32_t animation_frame[NUM_STRIPS][NUM_PIXELS]) {   
+void draw_visualizer_frame_matrix(PIO *pio_array, uint *sm_array, uint32_t animation_frame[NUM_STRIPS][NUM_PIXELS]) {   
     for (int col = 0; col < NUM_STRIPS; col++) {
         PIO pio = pio_array[col];
         for (int bar_pixel = 0; bar_pixel < NUM_PIXELS; bar_pixel++) {
