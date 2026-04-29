@@ -74,7 +74,7 @@ static const int fft_17_band_ranges[17][2] = {
 };
 
 float _17_band_gain[17] = {
-    0.7f,  // bass slightly reduced
+    0.7f,
     0.75f,
     0.8f,
     0.9f,
@@ -82,15 +82,15 @@ float _17_band_gain[17] = {
     1.1f,
     1.2f,
     1.3f,
-    1.5f,  // mids
+    1.5f,
     1.7f,
     1.9f,
     2.1f,
-    2.3f,
+    2.25f,
+    2.35f,
+    2.45f,
     2.5f,
-    2.7f,
-    2.9f,
-    3.0f   // highs capped
+    2.5f
 };
 
 static const int fft_18_band_ranges[18][2] = {
