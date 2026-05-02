@@ -96,13 +96,10 @@ void visualizer_landscape() {
         normalize_band_energy_to_frame_height(fft_band_energies, new_heights, MAX_BAND_ENERGY);
         update_frame_heights(new_heights, current_heights, 1);
 
-        // Right side (0–16)
+        // Right side (0–17)
         for (int i = 0; i < 18; i++) {
             display_heights[i] = new_heights[i];
         }
-
-        // Middle gap (17)
-        display_heights[17] = 0;
 
         // Right side (mirror: 18–34)
         for (int i = 0; i < 17; i++) {
