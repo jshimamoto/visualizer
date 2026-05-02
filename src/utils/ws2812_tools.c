@@ -185,3 +185,4 @@ void fade_from_to_global_color(volatile uint32_t *global_color, uint32_t from_co
         sleep_ms(5);
     }
 }
+

@@ -24,6 +24,7 @@
 #include "utils/ws2812_tools.h"
 #include "utils/aux_tools.h"
 #include "utils/sampling_tools.h"
+#include "utils/led_animations.h"
 
 // File header
 #include "main.h"
@@ -109,7 +110,15 @@ void visualizer_landscape() {
             display_heights[18 + i] = new_heights[16 - i];
         }
 
-        build_animation_frame(display_heights, animation_frame, urgb_u32(0x00, 0x14, 0x00));
+        uint16_t energy_sum;
+        for (int i = 0; i < NUM_DISTINCT_BARS; i++) {
+            energy_sum += fft_band_energies[i];
+        }
+        uint16_t energy_avg = energy_sum / NUM_DISTINCT_BARS;
+        printf("%d\n", energy_avg);
+
+        animate_avg_energy_intensity_color(display_heights, animation_frame, energy_avg);
+        // build_animation_frame(display_heights, animation_frame, urgb_u32(0x00, 0x14, 0x00));
         rotate_landscape_to_portrait(animation_frame, a_frame_normalized);
         draw_visualizer_frame_matrix(pio_array, sm_array, a_frame_normalized);
         
