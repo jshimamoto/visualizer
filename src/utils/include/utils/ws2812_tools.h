@@ -42,6 +42,17 @@ void update_energy_heights_fft(uint16_t *new_band_energies, uint8_t *current_hei
 void normalize_band_energy_to_frame_height(uint16_t *energy_array, uint8_t *frame_heights, uint16_t max_energy);
 void update_frame_heights(uint8_t *new_frame_heights, uint8_t *current_frame_heights, uint8_t decay_rate);
 void build_animation_frame(uint8_t *current_frame_heights, uint32_t animation_frame[TOTAL_VIS_BARS][VIS_BAR_HEIGHT], uint32_t color);
+
+void snakify_animation_frame(
+    uint32_t a_frame_strips[NUM_STRIPS][NUM_PIXELS], 
+    uint32_t a_frame_snaked[NUM_CHAINS][NUM_PIXELS_IN_CHAIN]
+);
+void draw_visualizer_frame_matrix_snake(
+    PIO pio_instance, 
+    uint *sm_array, 
+    uint32_t animation_frame[NUM_CHAINS][NUM_PIXELS_IN_CHAIN]
+);
+
 void draw_visualizer_frame_matrix(PIO *pio_array, uint *sm_array, uint32_t animation_frame[NUM_STRIPS][NUM_PIXELS]);  
 void rotate_landscape_to_portrait(uint32_t raw_rows[TOTAL_VIS_BARS][VIS_BAR_HEIGHT], uint32_t rotated[NUM_STRIPS][NUM_PIXELS]);
 

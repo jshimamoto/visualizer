@@ -3,6 +3,9 @@
 
 #define IS_RGBW false
 
+#define NUM_CHAINS 4
+#define NUM_PIXELS_IN_CHAIN 70
+
 #define NUM_PIXELS 35
 #define NUM_STRIPS 8
 
