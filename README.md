@@ -10,7 +10,6 @@ This repository provides the code to make an neopixel sound visualizer using a R
 - Independent Low, Mid, High gain control
 - Switch for changing between mic and aux mode
 - Button to switch between landscape and portrait display
-- PCB
 - 3D print a case for the unit
 
 ## Set Up
@@ -62,6 +61,8 @@ pico_sdk_init()
     - [Datasheet](#https://datasheets.raspberrypi.com/rp2040/rp2040-datasheet.pdf) 
 - Logic level shifter: SN74HCT125N 
     - [Datasheet](#https://www.ti.com/lit/ds/symlink/sn74hct125.pdf)
+- Op Amp: MCP6022-I/P
+  - [Product](#https://www.digikey.com/en/products/detail/microchip-technology/MCP6022-I-P/417828)
 - Microphone chip: MAX9814
     - [Datasheet](#https://www.analog.com/media/en/technical-documentation/data-sheets/max9814.pdf)
 - LEDs: WS2812B
