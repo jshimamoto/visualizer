@@ -217,7 +217,26 @@ void fade_from_to_global_color(volatile uint32_t *global_color, uint32_t from_co
         uint8_t b = b_from + ((b_to - b_from) * i / FADE_STEPS);
 
         *global_color = urgb_u32(r, g, b);
-
-        sleep_ms(5);
     }
+}
+
+// Fade colors using steps
+uint32_t fade_color_step(
+    uint32_t from_color,
+    uint32_t to_color,
+    int step
+) {
+    int r_from = (from_color >> 8) & 0xFF;
+    int g_from = (from_color >> 16) & 0xFF;
+    int b_from = from_color & 0xFF;
+
+    int r_to = (to_color >> 8) & 0xFF;
+    int g_to = (to_color >> 16) & 0xFF;
+    int b_to = to_color & 0xFF;
+
+    int r = r_from + ((r_to - r_from) * step) / FADE_STEPS;
+    int g = g_from + ((g_to - g_from) * step) / FADE_STEPS;
+    int b = b_from + ((b_to - b_from) * step) / FADE_STEPS;
+
+    return urgb_u32(r, g, b);
 }
