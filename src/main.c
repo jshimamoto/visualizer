@@ -29,21 +29,6 @@
 // File header
 #include "main.h"
 
-typedef struct {
-    int r;
-    int g;
-    int b;
-} rgb_t;
-
-rgb_t color_cycle[] = {
-    {0x14, 0x00, 0x00},
-    {0x00, 0x14, 0x00},
-    {0x00, 0x00, 0x14},
-    {0x0A, 0x0A, 0x00},
-    {0x0A, 0x00, 0x0A},
-    {0x00, 0x0A, 0x0A}
-};
-
 // Animation Logic
 void visualizer_landscape() {
     stdio_init_all();
@@ -73,7 +58,6 @@ void visualizer_landscape() {
 
     // Color
     uint32_t current_color = urgb_u32(color_cycle[0].r, color_cycle[0].g, color_cycle[0].b);
-    const int num_colors = sizeof(color_cycle) / sizeof(color_cycle[0]);
     int color_index = 0;
     int fade_step = 0;
 
@@ -98,25 +82,10 @@ void visualizer_landscape() {
             display_heights[18 + i] = new_heights[16 - i];
         }
 
-        // Color fading
-        rgb_t from = color_cycle[color_index];
-        rgb_t to = color_cycle[(color_index + 1) % num_colors];
-
-        int r = from.r + ((to.r - from.r) * fade_step) / FADE_STEPS;
-        int g = from.g + ((to.g - from.g) * fade_step) / FADE_STEPS;
-        int b = from.b + ((to.b - from.b) * fade_step) / FADE_STEPS;
-
-        current_color = urgb_u32(r, g, b);
-
-        fade_step++;
-
-        if (fade_step >= FADE_STEPS) {
-            fade_step = 0;
-            color_index = (color_index + 1) % num_colors;
-        }
-
         // Animation
-        build_animation_frame(display_heights, animation_frame, current_color);
+        animate_static_color_bars(display_heights, animation_frame);
+
+        // Rendering
         rotate_landscape_to_portrait(animation_frame, a_frame_normalized);
         snakify_animation_frame(a_frame_normalized, a_frame_snakified);
         draw_visualizer_frame_matrix_snake(pio0_instance, sm_array, a_frame_snakified);
