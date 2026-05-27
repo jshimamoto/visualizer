@@ -3,6 +3,10 @@
 
 #define IS_RGBW false
 
+// LED Strip config
+#define NUM_CHAINS 4
+#define NUM_PIXELS_IN_CHAIN 70
+
 #define NUM_PIXELS 35
 #define NUM_STRIPS 8
 
@@ -14,13 +18,15 @@
 
 #define VIS_BAR_HEIGHT ((FRAME_ORIENTATION == 0) ? NUM_PIXELS : NUM_STRIPS)
 #define TOTAL_VIS_BARS ((FRAME_ORIENTATION == 0) ? NUM_STRIPS : NUM_PIXELS)
-#define NUM_DISTINCT_BARS 17
+#define NUM_DISTINCT_BARS 18
 
-#define MAX_HEX 0x14
-#define FADE_STEPS 500
-
+// Pins
 #define WS2812_PINS_4 {10, 11, 12, 13}
 #define WS2812_PINS_8 {21, 20, 19, 18, 10, 11, 12, 13}
+
+// Color and color fading
+#define MAX_HEX 0x14
+#define FADE_STEPS 500
 
 // Safeguards
 #if FRAME_ORIENTATION == FRAME_PORTRAIT

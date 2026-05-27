@@ -29,26 +29,20 @@
 // File header
 #include "main.h"
 
-// Color changing thread
-volatile uint32_t current_color;
-void change_color_core() {
-    const uint32_t color_cycle[] = {
-        urgb_u32(0x14, 0x00, 0x00), // red
-        urgb_u32(0x00, 0x14, 0x00), // green
-        urgb_u32(0x00, 0x00, 0x14), // blue
-        urgb_u32(0x0A, 0x0A, 0x00), // yellow
-        urgb_u32(0x0A, 0x00, 0x0A), // magenta
-        urgb_u32(0x00, 0x0A, 0x0A)  // cyan
-    };
-    const int num_colors = sizeof(color_cycle) / sizeof(color_cycle[0]);
+typedef struct {
+    int r;
+    int g;
+    int b;
+} rgb_t;
 
-    int i = 0;
-    while (true) {
-        int next = (i + 1) % num_colors;
-        fade_from_to_global_color(&current_color, color_cycle[i], color_cycle[next]);
-        i = (i + 1) % num_colors;
-    }
-}
+rgb_t color_cycle[] = {
+    {0x14, 0x00, 0x00},
+    {0x00, 0x14, 0x00},
+    {0x00, 0x00, 0x14},
+    {0x0A, 0x0A, 0x00},
+    {0x0A, 0x00, 0x0A},
+    {0x00, 0x0A, 0x0A}
+};
 
 // Animation Logic
 void visualizer_landscape() {
@@ -61,21 +55,12 @@ void visualizer_landscape() {
 
     // PIO and GPIO set up
     PIO pio0_instance = pio0;
-    PIO pio1_instance = pio1;
-    PIO pio_array[NUM_STRIPS] = {pio0, pio0, pio0, pio0, pio1, pio1, pio1, pio1};
-    uint gpio_pin_array[NUM_STRIPS] = WS2812_PINS_8; 
-    uint sm_array[NUM_STRIPS];
-    uint offset_array[NUM_STRIPS];
+    uint gpio_pin_array[NUM_CHAINS] = WS2812_PINS_4; 
+    uint sm_array[NUM_CHAINS];
+    uint offset_array[NUM_CHAINS];
   
-    for (int i = 0; i < NUM_STRIPS; i++) {
-        PIO selected_pio;
-        if (i < 4) {
-            selected_pio = pio0_instance;   // First 4 strips on PIO0
-        } else {
-            selected_pio = pio1_instance;   // Remaining strips on PIO1
-        }
-
-        pio_set_sm_and_init_ws2812_program(&selected_pio, &sm_array[i], &offset_array[i], gpio_pin_array[i]);
+    for (int i = 0; i < NUM_CHAINS; i++) {
+        pio_set_sm_and_init_ws2812_program(&pio0_instance, &sm_array[i], &offset_array[i], gpio_pin_array[i]);
     }
 
     // Animation set up
@@ -84,9 +69,15 @@ void visualizer_landscape() {
     uint8_t display_heights [TOTAL_VIS_BARS] = {0};
     uint32_t animation_frame[TOTAL_VIS_BARS][VIS_BAR_HEIGHT];
     uint32_t a_frame_normalized[NUM_STRIPS][NUM_PIXELS];
+    uint32_t a_frame_snakified[NUM_CHAINS][NUM_PIXELS_IN_CHAIN];
+
+    // Color
+    uint32_t current_color = urgb_u32(color_cycle[0].r, color_cycle[0].g, color_cycle[0].b);
+    const int num_colors = sizeof(color_cycle) / sizeof(color_cycle[0]);
+    int color_index = 0;
+    int fade_step = 0;
 
     while (true) {
-        uint32_t color = current_color;
         if (new_data_ready) {
             for (int i = 0; i < NUM_DISTINCT_BARS; i++) {
                 fft_band_energies[i] = read_buffer[i];
@@ -97,30 +88,38 @@ void visualizer_landscape() {
         normalize_band_energy_to_frame_height(fft_band_energies, new_heights, MAX_BAND_ENERGY);
         update_frame_heights(new_heights, current_heights, 1);
 
-        // Right side (0–16)
+        // Right side (0–17)
         for (int i = 0; i < 18; i++) {
             display_heights[i] = new_heights[i];
         }
-
-        // Middle gap (17)
-        display_heights[17] = 0;
 
         // Right side (mirror: 18–34)
         for (int i = 0; i < 17; i++) {
             display_heights[18 + i] = new_heights[16 - i];
         }
 
-        uint16_t energy_sum;
-        for (int i = 0; i < NUM_DISTINCT_BARS; i++) {
-            energy_sum += fft_band_energies[i];
-        }
-        uint16_t energy_avg = energy_sum / NUM_DISTINCT_BARS;
-        printf("%d\n", energy_avg);
+        // Color fading
+        rgb_t from = color_cycle[color_index];
+        rgb_t to = color_cycle[(color_index + 1) % num_colors];
 
-        animate_avg_energy_intensity_color(display_heights, animation_frame, energy_avg);
-        // build_animation_frame(display_heights, animation_frame, urgb_u32(0x00, 0x14, 0x00));
+        int r = from.r + ((to.r - from.r) * fade_step) / FADE_STEPS;
+        int g = from.g + ((to.g - from.g) * fade_step) / FADE_STEPS;
+        int b = from.b + ((to.b - from.b) * fade_step) / FADE_STEPS;
+
+        current_color = urgb_u32(r, g, b);
+
+        fade_step++;
+
+        if (fade_step >= FADE_STEPS) {
+            fade_step = 0;
+            color_index = (color_index + 1) % num_colors;
+        }
+
+        // Animation
+        build_animation_frame(display_heights, animation_frame, current_color);
         rotate_landscape_to_portrait(animation_frame, a_frame_normalized);
-        draw_visualizer_frame_matrix(pio_array, sm_array, a_frame_normalized);
+        snakify_animation_frame(a_frame_normalized, a_frame_snakified);
+        draw_visualizer_frame_matrix_snake(pio0_instance, sm_array, a_frame_snakified);
         
         sleep_ms(5);
     }

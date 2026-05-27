@@ -99,7 +99,11 @@ void update_frame_heights(uint8_t *new_frame_heights, uint8_t *current_frame_hei
 }
 
 // Overwrites the input matrix for the visualizer grid for each pixel
-void build_animation_frame(uint8_t *current_frame_heights, uint32_t animation_frame[TOTAL_VIS_BARS][VIS_BAR_HEIGHT], uint32_t color) {
+void build_animation_frame(
+    uint8_t *current_frame_heights, 
+    uint32_t animation_frame[TOTAL_VIS_BARS][VIS_BAR_HEIGHT], 
+    uint32_t color
+) {
     for (int col = 0; col < TOTAL_VIS_BARS; col++) {
         for (int bar_pixel = 0; bar_pixel < VIS_BAR_HEIGHT; bar_pixel++) {
             if (bar_pixel < current_frame_heights[col]) {
@@ -111,7 +115,39 @@ void build_animation_frame(uint8_t *current_frame_heights, uint32_t animation_fr
     }
 }
 
-// Draws the visualizer board from input animation frame matrix
+// SNAKE CONFIG ----------------------------
+
+// Remakes the animation frame so it accounts for LED strip snaking when connected in a chain
+void snakify_animation_frame(
+    uint32_t a_frame_strips[NUM_STRIPS][NUM_PIXELS], 
+    uint32_t a_frame_snaked[NUM_CHAINS][NUM_PIXELS_IN_CHAIN]
+) {
+    for (int chain = 0; chain < NUM_CHAINS; chain++) {
+        int first_strip  = chain * 2;
+        int second_strip = first_strip + 1;
+
+        for (int i = 0; i < NUM_PIXELS; i++) {
+            a_frame_snaked[chain][i] = a_frame_strips[first_strip][i];
+        }
+
+        for (int i = 0; i < NUM_PIXELS; i++) {
+            a_frame_snaked[chain][NUM_PIXELS + i] = a_frame_strips[second_strip][NUM_PIXELS - 1 - i];
+        }
+    }
+}
+
+// Draws the visualizer board from input animation frame matrix if there are chains of strips for different rows
+void draw_visualizer_frame_matrix_snake(PIO pio_instance, uint *sm_array, uint32_t animation_frame[NUM_CHAINS][NUM_PIXELS_IN_CHAIN]) {   
+    for (int col = 0; col < NUM_CHAINS; col++) {
+        for (int bar_pixel = 0; bar_pixel < NUM_PIXELS_IN_CHAIN; bar_pixel++) {
+            put_pixel(pio_instance, sm_array[col], animation_frame[col][bar_pixel]);
+        }
+    }
+}
+
+// STRIP CONFIG ----------------------------
+
+// Draws the visualizer board from input animation frame matrix if each strip is independent chain
 void draw_visualizer_frame_matrix(PIO *pio_array, uint *sm_array, uint32_t animation_frame[NUM_STRIPS][NUM_PIXELS]) {   
     for (int col = 0; col < NUM_STRIPS; col++) {
         PIO pio = pio_array[col];
@@ -181,8 +217,26 @@ void fade_from_to_global_color(volatile uint32_t *global_color, uint32_t from_co
         uint8_t b = b_from + ((b_to - b_from) * i / FADE_STEPS);
 
         *global_color = urgb_u32(r, g, b);
-
-        sleep_ms(5);
     }
 }
 
+// Fade colors using steps
+uint32_t fade_color_step(
+    uint32_t from_color,
+    uint32_t to_color,
+    int step
+) {
+    int r_from = (from_color >> 8) & 0xFF;
+    int g_from = (from_color >> 16) & 0xFF;
+    int b_from = from_color & 0xFF;
+
+    int r_to = (to_color >> 8) & 0xFF;
+    int g_to = (to_color >> 16) & 0xFF;
+    int b_to = to_color & 0xFF;
+
+    int r = r_from + ((r_to - r_from) * step) / FADE_STEPS;
+    int g = g_from + ((g_to - g_from) * step) / FADE_STEPS;
+    int b = b_from + ((b_to - b_from) * step) / FADE_STEPS;
+
+    return urgb_u32(r, g, b);
+}

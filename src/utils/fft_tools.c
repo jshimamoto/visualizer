@@ -74,7 +74,7 @@ static const int fft_17_band_ranges[17][2] = {
 };
 
 float _17_band_gain[17] = {
-    0.7f,  // bass slightly reduced
+    0.7f,
     0.75f,
     0.8f,
     0.9f,
@@ -82,15 +82,15 @@ float _17_band_gain[17] = {
     1.1f,
     1.2f,
     1.3f,
-    1.5f,  // mids
+    1.5f,
     1.7f,
     1.9f,
     2.1f,
-    2.3f,
+    2.25f,
+    2.35f,
+    2.45f,
     2.5f,
-    2.7f,
-    2.9f,
-    3.0f   // highs capped
+    2.5f
 };
 
 static const int fft_18_band_ranges[18][2] = {
@@ -115,9 +115,9 @@ static const int fft_18_band_ranges[18][2] = {
 };
 
 float _18_band_gain[18] = {
-    0.7f,
-    0.75f,
     0.8f,
+    0.8f,
+    0.9f,
     0.9f,
     1.0f,
     1.1f,
@@ -129,11 +129,12 @@ float _18_band_gain[18] = {
     2.0f,
     2.2f,
     2.4f,
-    2.6f,
-    2.75f,
-    2.9f,
-    3.0f
+    2.55f,
+    2.65f,
+    2.7f,
+    2.0f
 };
+
 
 // Overwrites the input array with band energies from the audio sample
 // NOTE: Assumes adc_init() and adc_select_input() were already called
@@ -166,8 +167,8 @@ void set_fft_band_energies(uint16_t *band_energies, int num_bands, uint16_t base
 
     // Sum magnitudes in each band
     for (int band = 0; band < num_bands; ++band) {
-        int start = (fft_17_band_ranges)[band][0];
-        int end = (fft_17_band_ranges)[band][1];
+        int start = (fft_18_band_ranges)[band][0];
+        int end = (fft_18_band_ranges)[band][1];
 
         uint32_t sum = 0;
         for (int bin = start; bin <= end && bin < FFT_SIZE / 2 + 1; ++bin) {
@@ -176,7 +177,7 @@ void set_fft_band_energies(uint16_t *band_energies, int num_bands, uint16_t base
             sum += real * real + imag * imag;
         }
 
-        band_energies[band] = (uint16_t)((sqrtf((float)sum)) * _17_band_gain[band]);
+        band_energies[band] = (uint16_t)((sqrtf((float)sum)) * _18_band_gain[band]);
     }
 }
 
@@ -239,8 +240,8 @@ void set_fft_band_energies_overlap(uint16_t *band_energies,
     }
 
     for (int band = 0; band < num_bands; ++band) {
-        int start = fft_17_band_ranges[band][0];
-        int end   = fft_17_band_ranges[band][1];
+        int start = fft_18_band_ranges[band][0];
+        int end   = fft_18_band_ranges[band][1];
 
         uint32_t sum = 0;
         for (int bin = start; bin <= end && bin < FFT_SIZE / 2 + 1; ++bin) {
@@ -249,7 +250,7 @@ void set_fft_band_energies_overlap(uint16_t *band_energies,
             sum += real * real + imag * imag;
         }
 
-        band_energies[band] = (uint16_t)(sqrtf((float)sum) * _17_band_gain[band]);
+        band_energies[band] = (uint16_t)(sqrtf((float)sum) * _18_band_gain[band]);
     }
 }
 

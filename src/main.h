@@ -2,8 +2,8 @@
 #define MAIN_H
 
 // ADC
-#define ADC_INPUT 2
-#define ADC_PIN 28
+#define ADC_INPUT 0
+#define ADC_PIN 26
 
 #define INPUT_MODE "AUX"
 
