@@ -49,7 +49,7 @@ void visualizer_landscape() {
     }
 
     // Animation set up
-    uint16_t fft_band_energies[NUM_DISTINCT_BARS];
+    uint16_t fft_band_energies[NUM_DISTINCT_BARS] = {0};
     uint8_t current_heights[NUM_DISTINCT_BARS] = {0};
     uint8_t display_heights [TOTAL_VIS_BARS] = {0};
     uint32_t animation_frame[TOTAL_VIS_BARS][VIS_BAR_HEIGHT];
@@ -90,7 +90,7 @@ void visualizer_landscape() {
         snakify_animation_frame(a_frame_normalized, a_frame_snakified);
         draw_visualizer_frame_matrix_snake(pio0_instance, sm_array, a_frame_snakified);
         
-        sleep_ms(5);
+        sleep_ms(10);
     }
 }
 
