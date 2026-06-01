@@ -119,6 +119,37 @@ uint32_t get_color(uint16_t avg_energy) {
     return urgb_u32(0x00, g, b);
 }
 
+// ===============================================================================================================
+
+BarColorRange bar_colors_vertical[] = {
+    {0,  1,  {0x00, 0x14, 0x00}}, // green
+    {2,  4,  {0x00, 0x0A, 0x0A}}, // cyan
+    {5,  7,  {0x00, 0x00, 0x14}} // blue
+};
+/*
+Animate with certain colors for certain heights
+*/
+void animate_bar_height_color(uint8_t *current_frame_heights, uint32_t animation_frame[TOTAL_VIS_BARS][VIS_BAR_HEIGHT]) {
+    for (int col = 0; col < TOTAL_VIS_BARS; col++) {
+        for (int bar_pixel = 0; bar_pixel < VIS_BAR_HEIGHT; bar_pixel++) {
+            if (bar_pixel < current_frame_heights[col]) {
+                if (bar_pixel < 2) {
+                    animation_frame[col][bar_pixel] = urgb_u32(0x00, 0x00, 0x14);
+                } else if (bar_pixel >= 2 && bar_pixel <= 4) {
+                    animation_frame[col][bar_pixel] = urgb_u32(0x00, 0x0A, 0x0A);
+                } else if (bar_pixel >= 5) {
+                    animation_frame[col][bar_pixel] = urgb_u32(0x00, 0x14, 0x00);
+                }
+            } else {
+                animation_frame[col][bar_pixel] = urgb_u32(0x00, 0x00, 0x01);
+            }
+        }
+    }
+}
+
+
+// ===============================================================================================================
+
 /*
 Animate visualizer based off of average band energy
 low -> blue
@@ -141,5 +172,3 @@ void animate_avg_energy_intensity_color(
         }
     }
 }
-
-void animate_bar_height_color();

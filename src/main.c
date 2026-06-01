@@ -83,7 +83,7 @@ void visualizer_landscape() {
         }
 
         // Animation
-        animate_static_color_bars(display_heights, animation_frame);
+        animate_bar_height_color(display_heights, animation_frame);
 
         // Rendering
         rotate_landscape_to_portrait(animation_frame, a_frame_normalized);

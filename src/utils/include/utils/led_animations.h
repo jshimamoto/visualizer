@@ -33,12 +33,16 @@ void animate_static_color_bars(
 void animate_avg_energy_intensity_color(
     uint8_t *current_frame_heights, 
     uint32_t animation_frame[TOTAL_VIS_BARS][VIS_BAR_HEIGHT], 
-    uint16_t avg_energy); 
+    uint16_t avg_energy
+); 
+
+// ============================================================
+void animate_bar_height_color(
+    uint8_t *current_frame_heights, 
+    uint32_t animation_frame[TOTAL_VIS_BARS][VIS_BAR_HEIGHT]
+);
     
 uint32_t get_color(uint16_t avg_energy);
-
-void animate_bar_height_color();
-
 
 
 #endif
