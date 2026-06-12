@@ -1,5 +1,6 @@
 #include "utils/led_animations.h"
 #include "utils/ws2812_tools.h"
+#include "utils/ws2812_config.h"
 #include "utils/fft_tools.h"
 
 /*
@@ -87,11 +88,11 @@ rgb_t color_cycle[] = {
     {0x0A, 0x00, 0x0A},
     {0x00, 0x0A, 0x0A}
 };
-void animate_fading_color(int *color_index, int *fade_step, uint32_t *current_color) {
+void fade_color(int *color_index, int *fade_step, uint32_t *current_color) {
     rgb_t from = color_cycle[*color_index];
     rgb_t to = color_cycle[(*color_index + 1) % NUM_COLORS];
 
-    int r = from.r + ((to.r - from.r) * *fade_step) / FADE_STEPS;
+    int r = (from.r + ((to.r - from.r) * *fade_step) / FADE_STEPS);
     int g = from.g + ((to.g - from.g) * *fade_step) / FADE_STEPS;
     int b = from.b + ((to.b - from.b) * *fade_step) / FADE_STEPS;
 
@@ -103,20 +104,6 @@ void animate_fading_color(int *color_index, int *fade_step, uint32_t *current_co
         *fade_step = 0;
         *color_index = (*color_index + 1) % NUM_COLORS;
     }
-}
-
-uint32_t get_color(uint16_t avg_energy) {
-    float t = avg_energy / 3000;
-
-    if (t > 1.0f) t = 1.0f;
-    if (t < 0.0f) t = 0.0f;
-
-    uint8_t r = 0;
-    uint8_t g = (uint8_t)(10 + t * (20 - 10));
-    uint8_t b = (uint8_t)(10 + t * (0  - 10));
-
-    // pack into 0xRRGGBB
-    return urgb_u32(0x00, g, b);
 }
 
 // ===============================================================================================================
@@ -156,6 +143,19 @@ low -> blue
 high -> green
 Note: this one sucks as is
 */
+uint32_t get_color(uint16_t avg_energy) {
+    float t = avg_energy / 3000;
+
+    if (t > 1.0f) t = 1.0f;
+    if (t < 0.0f) t = 0.0f;
+
+    uint8_t r = 0;
+    uint8_t g = (uint8_t)(10 + t * (20 - 10));
+    uint8_t b = (uint8_t)(10 + t * (0  - 10));
+
+    // pack into 0xRRGGBB
+    return urgb_u32(0x00, g, b);
+}
 void animate_avg_energy_intensity_color(
     uint8_t *current_frame_heights, 
     uint32_t animation_frame[TOTAL_VIS_BARS][VIS_BAR_HEIGHT], 

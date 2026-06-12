@@ -33,7 +33,7 @@
 void visualizer_landscape() {
     stdio_init_all();
 
-    // ADC init for mic input
+    // ADC init for input
     adc_init();
     adc_gpio_init(ADC_PIN);
     adc_select_input(ADC_INPUT);
@@ -55,6 +55,7 @@ void visualizer_landscape() {
     uint32_t animation_frame[TOTAL_VIS_BARS][VIS_BAR_HEIGHT];
     uint32_t a_frame_normalized[NUM_STRIPS][NUM_PIXELS];
     uint32_t a_frame_snakified[NUM_CHAINS][NUM_PIXELS_IN_CHAIN];
+
 
     // Color
     uint32_t current_color = urgb_u32(color_cycle[0].r, color_cycle[0].g, color_cycle[0].b);
@@ -82,8 +83,9 @@ void visualizer_landscape() {
             display_heights[18 + i] = new_heights[16 - i];
         }
 
-        // Animation
         animate_bar_height_color(display_heights, animation_frame);
+        // animate_fading_color(&color_index, &fade_step, &current_color);
+        // animate_single_color(display_heights, animation_frame, current_color);
 
         // Rendering
         rotate_landscape_to_portrait(animation_frame, a_frame_normalized);
