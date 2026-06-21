@@ -29,6 +29,11 @@
 // File header
 #include "main.h"
 
+// Color
+static uint32_t current_color;
+static int color_index = 0;
+static int fade_step = 0;
+
 // Animation Logic
 void visualizer_landscape() {
     stdio_init_all();
@@ -52,15 +57,12 @@ void visualizer_landscape() {
     uint16_t fft_band_energies[NUM_DISTINCT_BARS] = {0};
     uint8_t current_heights[NUM_DISTINCT_BARS] = {0};
     uint8_t display_heights [TOTAL_VIS_BARS] = {0};
-    uint32_t animation_frame[TOTAL_VIS_BARS][VIS_BAR_HEIGHT];
-    uint32_t a_frame_normalized[NUM_STRIPS][NUM_PIXELS];
-    uint32_t a_frame_snakified[NUM_CHAINS][NUM_PIXELS_IN_CHAIN];
+    static uint32_t animation_frame[TOTAL_VIS_BARS][VIS_BAR_HEIGHT];
+    static uint32_t a_frame_normalized[NUM_STRIPS][NUM_PIXELS];
+    static uint32_t a_frame_snakified[NUM_CHAINS][NUM_PIXELS_IN_CHAIN];
 
 
-    // Color
-    uint32_t current_color = urgb_u32(color_cycle[0].r, color_cycle[0].g, color_cycle[0].b);
-    int color_index = 0;
-    int fade_step = 0;
+    current_color = urgb_u32(color_cycle[0].r, color_cycle[0].g, color_cycle[0].b);
 
     while (true) {
         if (new_data_ready) {
@@ -83,9 +85,9 @@ void visualizer_landscape() {
             display_heights[18 + i] = new_heights[16 - i];
         }
 
-        animate_bar_height_color(display_heights, animation_frame);
-        // animate_fading_color(&color_index, &fade_step, &current_color);
-        // animate_single_color(display_heights, animation_frame, current_color);
+        // animate_bar_height_color(display_heights, animation_frame);
+        fade_color(&color_index, &fade_step, &current_color);
+        animate_single_color(display_heights, animation_frame, current_color);
 
         // Rendering
         rotate_landscape_to_portrait(animation_frame, a_frame_normalized);

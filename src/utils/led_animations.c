@@ -2,6 +2,7 @@
 #include "utils/ws2812_tools.h"
 #include "utils/ws2812_config.h"
 #include "utils/fft_tools.h"
+#include <stdio.h>
 
 /*
 Animate visualizer with a single input color
@@ -97,7 +98,6 @@ void fade_color(int *color_index, int *fade_step, uint32_t *current_color) {
     int b = from.b + ((to.b - from.b) * *fade_step) / FADE_STEPS;
 
     *current_color = urgb_u32(r, g, b);
-
     (*fade_step)++;
 
     if (*fade_step >= FADE_STEPS) {
