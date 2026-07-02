@@ -85,9 +85,9 @@ void visualizer_landscape() {
             display_heights[18 + i] = new_heights[16 - i];
         }
 
-        // animate_bar_height_color(display_heights, animation_frame);
-        fade_color(&color_index, &fade_step, &current_color);
-        animate_single_color(display_heights, animation_frame, current_color);
+        animate_bar_height_color(display_heights, animation_frame);
+        // fade_color(&color_index, &fade_step, &current_color);
+        // animate_single_color(display_heights, animation_frame, current_color);
 
         // Rendering
         rotate_landscape_to_portrait(animation_frame, a_frame_normalized);

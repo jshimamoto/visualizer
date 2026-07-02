@@ -110,8 +110,8 @@ void fade_color(int *color_index, int *fade_step, uint32_t *current_color) {
 
 BarColorRange bar_colors_vertical[] = {
     {0,  1,  {0x00, 0x14, 0x00}}, // green
-    {2,  4,  {0x00, 0x0A, 0x0A}}, // cyan
-    {5,  7,  {0x00, 0x00, 0x14}} // blue
+    {2,  4,  {0x0B, 0x08, 0x00}}, // orange
+    {5,  7,  {0x0E, 0x00, 0x06}} // magenta
 };
 /*
 Animate with certain colors for certain heights
@@ -121,11 +121,11 @@ void animate_bar_height_color(uint8_t *current_frame_heights, uint32_t animation
         for (int bar_pixel = 0; bar_pixel < VIS_BAR_HEIGHT; bar_pixel++) {
             if (bar_pixel < current_frame_heights[col]) {
                 if (bar_pixel < 2) {
-                    animation_frame[col][bar_pixel] = urgb_u32(0x00, 0x00, 0x14);
+                    animation_frame[col][bar_pixel] = urgb_u32(0x00, 0x00, 0x14); // green
                 } else if (bar_pixel >= 2 && bar_pixel <= 4) {
-                    animation_frame[col][bar_pixel] = urgb_u32(0x00, 0x0A, 0x0A);
+                    animation_frame[col][bar_pixel] = urgb_u32(0x00, 0x0A, 0x0A); // cyan
                 } else if (bar_pixel >= 5) {
-                    animation_frame[col][bar_pixel] = urgb_u32(0x00, 0x14, 0x00);
+                    animation_frame[col][bar_pixel] = urgb_u32(0x00, 0x14, 0x00); // blue
                 }
             } else {
                 animation_frame[col][bar_pixel] = urgb_u32(0x00, 0x00, 0x01);
@@ -172,3 +172,7 @@ void animate_avg_energy_intensity_color(
         }
     }
 }
+
+// ===============================================================================================================
+
+void startup_animation();
