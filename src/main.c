@@ -61,6 +61,13 @@ void visualizer_landscape() {
     static uint32_t a_frame_normalized[NUM_STRIPS][NUM_PIXELS];
     static uint32_t a_frame_snakified[NUM_CHAINS][NUM_PIXELS_IN_CHAIN];
 
+    startup_animation(
+        pio0_instance, 
+        sm_array, 
+        animation_frame,
+        a_frame_normalized,
+        a_frame_snakified
+    );
 
     current_color = urgb_u32(color_cycle[0].r, color_cycle[0].g, color_cycle[0].b);
 
@@ -90,7 +97,7 @@ void visualizer_landscape() {
         // animate_single_color(display_heights, animation_frame, current_color);
 
         // Rendering
-        rotate_landscape_to_portrait(animation_frame, a_frame_normalized);
+        transpose_matrix(animation_frame, a_frame_normalized);
         snakify_animation_frame(a_frame_normalized, a_frame_snakified);
         draw_visualizer_frame_matrix_snake(pio0_instance, sm_array, a_frame_snakified);
         

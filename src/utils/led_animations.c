@@ -3,6 +3,13 @@
 #include "utils/ws2812_config.h"
 #include "utils/fft_tools.h"
 #include <stdio.h>
+#include <string.h>
+
+#include "pico/stdlib.h"
+#include "pico/multicore.h"
+#include "hardware/pio.h"
+#include "hardware/clocks.h"
+#include "hardware/adc.h"
 
 /*
 Animate visualizer with a single input color
@@ -175,4 +182,55 @@ void animate_avg_energy_intensity_color(
 
 // ===============================================================================================================
 
-void startup_animation();
+static const StartupFrame startup_animation_frames[] = {
+    {.height_array = {0}, .color = {0}, 5},
+    {.height_array = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0}, .color = {0, 20, 0}, .num_frames = 10},
+    {.height_array = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 0}, .color = {0, 20, 0}, .num_frames = 10},
+    {.height_array = {3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 1, 1, 0}, .color = {0, 20, 0}, .num_frames = 10},
+    {.height_array = {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 2, 2, 1, 1, 0}, .color = {0, 20, 0}, .num_frames = 10},
+    {.height_array = {5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0}, .color = {0, 20, 0}, .num_frames = 10},
+    {.height_array = {6, 6, 6, 6, 6, 6, 6, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0}, .color = {0, 20, 0}, .num_frames = 10},
+    {.height_array = {7, 7, 7, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0}, .color = {0, 20, 0}, .num_frames = 10},
+    {.height_array = {8, 8, 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0}, .color = {0, 20, 0}, .num_frames = 10},
+};
+size_t num_frames = sizeof(startup_animation_frames) / sizeof(startup_animation_frames[0]);
+
+void startup_animation(
+    PIO pio_instance, 
+    uint *sm_array,
+    uint32_t animation_frame[TOTAL_VIS_BARS][VIS_BAR_HEIGHT],
+    uint32_t a_frame_normalized[NUM_STRIPS][NUM_PIXELS],
+    uint32_t a_frame_snakified[NUM_CHAINS][NUM_PIXELS_IN_CHAIN]
+) {
+    uint8_t display_heights [TOTAL_VIS_BARS] = {0};
+
+    for (int frame = 0; frame < num_frames; frame++) {
+        for (int j = 0; j < startup_animation_frames[frame].num_frames; j++){
+            // Right side (0–17)
+            for (int bar = 0; bar < 18; bar++) {
+                display_heights[bar] = startup_animation_frames[frame].height_array[bar];
+            }
+
+            // Right side (mirror: 18–34)
+            for (int bar = 0; bar < 17; bar++) {
+                display_heights[18 + bar] = startup_animation_frames[frame].height_array[16 - bar];
+            }
+
+            uint32_t current_color = urgb_u32(
+                startup_animation_frames[frame].color.r, 
+                startup_animation_frames[frame].color.g,
+                startup_animation_frames[frame].color.b
+            );
+            animate_single_color(display_heights, animation_frame, current_color);
+
+            // Rendering
+            transpose_matrix(animation_frame, a_frame_normalized);
+            snakify_animation_frame(a_frame_normalized, a_frame_snakified);
+            draw_visualizer_frame_matrix_snake(pio_instance, sm_array, a_frame_snakified);
+            
+            sleep_ms(10);
+        }
+    }
+
+    memset(animation_frame, 0, TOTAL_VIS_BARS * VIS_BAR_HEIGHT * sizeof(uint32_t));
+}

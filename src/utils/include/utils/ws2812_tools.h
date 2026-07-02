@@ -54,7 +54,7 @@ void draw_visualizer_frame_matrix_snake(
 );
 
 void draw_visualizer_frame_matrix(PIO *pio_array, uint *sm_array, uint32_t animation_frame[NUM_STRIPS][NUM_PIXELS]);  
-void rotate_landscape_to_portrait(uint32_t raw_rows[TOTAL_VIS_BARS][VIS_BAR_HEIGHT], uint32_t rotated[NUM_STRIPS][NUM_PIXELS]);
+void transpose_matrix(uint32_t raw_rows[TOTAL_VIS_BARS][VIS_BAR_HEIGHT], uint32_t rotated[NUM_STRIPS][NUM_PIXELS]);
 
 uint32_t fade_color_step(
     uint32_t from_color,

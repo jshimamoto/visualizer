@@ -1,5 +1,5 @@
-#ifndef LED_ANIMATIONs_H
-#define LED_ANIMATIONs_H
+#ifndef LED_ANIMATIONS_H
+#define LED_ANIMATIONS_H
 
 #include "utils/ws2812_tools.h"
 
@@ -48,5 +48,20 @@ void animate_bar_height_color(
     
 uint32_t get_color(uint16_t avg_energy);
 
+// ============================================================
+
+typedef struct {
+    int height_array[NUM_DISTINCT_BARS];
+    rgb_t color;
+    int num_frames;
+} StartupFrame;
+
+void startup_animation(
+    PIO pio_instance, 
+    uint *sm_array,
+    uint32_t animation_frame[TOTAL_VIS_BARS][VIS_BAR_HEIGHT],
+    uint32_t a_frame_normalized[NUM_STRIPS][NUM_PIXELS],
+    uint32_t a_frame_snakified[NUM_CHAINS][NUM_PIXELS_IN_CHAIN]
+);
 
 #endif

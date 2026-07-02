@@ -25,7 +25,7 @@ void pio_set_sm_and_init_ws2812_program(PIO *pio, uint *sm, uint *offset, uint8_
 // ============================================================================================================================================
 
 // Transposes a 8x35 matrix to a 35x8 for easy feeding into the animation function
-void rotate_landscape_to_portrait(uint32_t raw_rows[TOTAL_VIS_BARS][VIS_BAR_HEIGHT], uint32_t rotated[NUM_STRIPS][NUM_PIXELS]) {
+void transpose_matrix(uint32_t raw_rows[TOTAL_VIS_BARS][VIS_BAR_HEIGHT], uint32_t rotated[NUM_STRIPS][NUM_PIXELS]) {
     for (int row = 0; row < NUM_STRIPS; row++) {
         for (int col = 0; col < NUM_PIXELS; col++) {
             rotated[row][col] = raw_rows[NUM_PIXELS - 1 - col][row];
@@ -176,6 +176,7 @@ void draw_visualizer_frame(PIO *pio_array, uint *sm_array, uint8_t *height_frame
 // ============================================================================================================================================
 // COLOR CONTROL ==============================================================================================================================
 // ============================================================================================================================================
+
 // Fade color directly on strip
 void fade_from_to(uint32_t from_color, uint32_t to_color, PIO pio, uint *sm_array) {
     uint8_t r_from = (from_color >> 8) & 0xFF;
